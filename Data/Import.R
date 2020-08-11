@@ -89,7 +89,7 @@ parent.lender.link <- read_excel("Data/Raw/Links/DealScan_Parent_Lender_Link.xls
   distinct(lender_parent_name, .keep_all = TRUE)
 
 
-save(list = c("IRB.indicator", "WDI", "BRSS"),
+save(list = c("IRB.indicator", "WDI", "BRSS", "basel.indicator"),
      file=paste0("Data/Temp/AuxiliarData.Rda"))
 
 ##============================================================================##
@@ -125,29 +125,27 @@ tranche.data <- dealscan.data[which(grepl("Borrower", names(dealscan.data)))]%>%
   reduce(full_join, by = c("Tranche Id", "Deal Id", "Borrower Id", "id_aux")) %>%
   full_join(tranche.data, by = c("Tranche Id", "Deal Id", "id_aux")) %>%
   drop_na(`Tranche Id`) %>%
-  filter(`Tranche O/A` == "Origination")
+  filter(`Tranche O/A` == "Origination") %>%
+  rename_all(funs(str_replace_all(.,"[:punct:]","")))%>%
+  rename_all(funs(str_replace_all(.,"[[:space:]]","_")))%>%
+  rename_all(tolower)
 
 deal.data <- dealscan.data[which(grepl("Deal", names(dealscan.data)))]%>%
   reduce(full_join, by = c("Deal Id")) %>%
-  distinct(`Deal Id`, .keep_all = TRUE)
+  distinct(`Deal Id`, .keep_all = TRUE) %>%
+  rename_all(funs(str_replace_all(.,"[:punct:]","")))%>%
+  rename_all(funs(str_replace_all(.,"[[:space:]]","_")))%>%
+  rename_all(tolower)
 
 lender.data <- dealscan.data[which(grepl("Lender$", names(dealscan.data)))]%>%
   reduce(full_join, by = c("Tranche Id")) %>%
-  rename_all(funs(str_replace_all(.,"[[:space:]]","_")))%>%
   rename_all(funs(str_replace_all(.,"\\([:graph:]\\)","")))%>%
+  rename_all(funs(str_replace_all(.,"[[:space:]]","_")))%>%
   rename_all(tolower) %>%
   mutate(lender_share = as.numeric(ifelse(lender_share == "N/A", NA, lender_share)),
          lender_commit = as.numeric(str_replace(lender_commit,"USD ","")),
          lender_parent_name = tolower(str_replace_all(lender_parent_name,"[[:space:]]",""))) %>%
   full_join(parent.lender.link, by = c("lender_parent_name"))
-
-
-## Code to extract names from dealscan that matches pillar 3 dataset
-#sample <- pillar3.data %>% distinct(bvdid, .keep_all = TRUE) %>% select(bvdid, name, Bank)
-# dealscan.names <- lender.data %>% mutate(`Lender Parent Name` = tolower(`Lender Parent Name`))%>% 
-#   filter(str_detect(`Lender Parent Name`, 'STRING')) %>% 
-#   distinct(`Lender Parent Name`, .keep_all = TRUE)%>%
-#   select(`Lender Parent Name`, `Lender Name`, `Lender Parent Operating Country`, `Lender Operating Country`)
 
 save(list = c("tranche.data", "deal.data", "lender.data"),
      file=paste0("Data/Temp/DealScanData.Rda"))
