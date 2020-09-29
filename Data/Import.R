@@ -187,7 +187,14 @@ pillar3.data <- IRB.indicator %>%
   group_by(name, bvdid, Country, year) %>%
   summarise(RWA = sum(RWA, na.rm = TRUE),
             EAD = sum(EAD, na.rm = TRUE)) %>%
-  mutate(RW = ifelse(RWA == 0 | EAD == 0, NA, RWA/EAD))
+  mutate(RW = ifelse(RWA == 0 | EAD == 0, NA, RWA/EAD)) %>%
+  group_by(bvdid)%>% 
+  arrange(bvdid, year) %>%
+  fill(RW, .direction = "up")%>%
+  group_by(Country, year)%>%
+  mutate(mean.RW     = mean(RW, na.rm = TRUE),
+         n_banks     = n(),
+         mean.RW_adj = (n_banks*mean.RW-RW)/(n_banks-1)) 
 
 # Save data frame
 save(pillar3.data,file=paste0("Data/Temp/Pillar3Data.Rda"))
