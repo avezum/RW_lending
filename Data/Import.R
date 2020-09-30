@@ -21,73 +21,84 @@ rm(list = ls())
 ## Auxiliar data                                                              ##
 ##============================================================================##
 
-# IRB adoption year
-IRB.indicator <- read_xlsx("Data/Raw/Pillar3/Auxiliar/Auxiliar.xlsx",sheet = 1)  %>%
-  pivot_longer(cols      = where(is.numeric),
-               names_to  = "year",
-               values_to = "IRB")%>%
-  select(name, Country, bvdid_new, bvdid_old, year, IRB)%>%
-  mutate(year= as.numeric(year))
-
-# Basel II introduction
-basel.indicator <- read_xlsx("Data/Raw/Pillar3/Auxiliar/Auxiliar.xlsx", sheet = 2) %>%
-  select(Country, basel = year)
-
-# Macro variables
-country.code <- read.csv("Data/Raw/WDI/WDICountry.csv") %>%
-  rename_all(tolower)%>%
-  select(country.code = ï..country.code,
-         Country = x2.alpha.code,
-         currency.unit)%>%
-  mutate(currency.unit = ifelse(country.code=="EMU", "Euro", as.character(currency.unit)))
-
-WDI <- read.csv("Data/Raw/WDI/WDIData.csv") %>%
-  filter(Indicator.Code %in% c("NY.GDP.DEFL.ZS","NY.GDP.PCAP.KD","NY.GDP.PCAP.KN", "PA.NUS.FCRF", "PX.REX.REER",
-                               "FS.AST.DOMS.GD.ZS","FS.AST.PRVT.GD.ZS","FD.AST.PRVT.GD.ZS", "FP.CPI.TOTL")) %>%
-  rename_all(funs(str_replace_all(.,"([\\w])([0-9]+)$", "\\1\\.\\2"))) %>%
-  reshape(varying   = c(grep("X.", names(.))),
-          direction = 'long', 
-          timevar   = 'year')%>%
-  select(Country.Code,Indicator.Code,X,year) %>%
-  reshape(direction = 'wide',
-          idvar     = c('Country.Code','year'), 
-          timevar   = 'Indicator.Code') %>%
-  rename_all(tolower) %>%
-  inner_join(country.code)%>%
-  select(deflator        = x.ny.gdp.defl.zs,
-         cpi             = x.fp.cpi.totl,
-         gdppc.us        = x.ny.gdp.pcap.kd,
-         gdppc           = x.ny.gdp.pcap.kn,
-         er              = x.pa.nus.fcrf,
-         reer            = x.px.rex.reer,
-         credit_gdp      = x.fs.ast.doms.gd.zs,
-         priv_credit_gdp = x.fs.ast.prvt.gd.zs,
-         bank_credit_gdp = x.fd.ast.prvt.gd.zs,
-         year,
-         Country,
-         currency.unit)%>%
-  mutate(credit_gdp      = credit_gdp/100,
-         priv_credit_gdp = priv_credit_gdp/100,
-         bank_credit_gdp = bank_credit_gdp/100,
-         cpi             = cpi/100,
-         group.var       = ifelse(is.na(er)| Country == "XC", paste(currency.unit, year, sep = ""), NA),
-         er              = na.aggregate(er, by = group.var )) %>%
-  select(-group.var, -currency.unit)
-
-
-# Bank Regulation and Supervision
-country.code <- read.csv("Data/Raw/WDI/WDICountry.csv") %>%
-  rename_all(tolower)%>%
-  select(country.name = short.name,
-         Country      = x2.alpha.code)
-
-load("Data/Raw/BRSS/Output/BRSS.Rdata")
-
+# Matching datasets
 parent.lender.link <- read_excel("Data/Raw/Links/DealScan_Parent_Lender_Link.xlsx", 
-                                          sheet = "BankScope") %>%
+                                 sheet = "BankScope") %>%
   mutate(lender_parent_name = tolower(str_replace_all(lender_parent_name,"[[:space:]]",""))) %>%
   distinct(lender_parent_name, .keep_all = TRUE)
 
+ifs.country.code <- read_excel("Data/Raw/IFS/ifs_code.xlsx", skip = 1) %>%
+  select(contains("Code")) %>%
+  rename_all(tolower)%>%
+  rename_all(~ str_replace_all(.,"[:blank:]", "\\_"))
+
+country.code <- read.csv("Data/Raw/WDI/WDICountry.csv", fileEncoding="UTF-8-BOM") %>%
+  rename_all(tolower)%>%
+  rename(long_country_code = country.code,
+         short_country_code = x2.alpha.code,
+         country_name = short.name)%>%
+  rename_all(~ str_replace_all(.,"\\.", "\\_"))%>%
+  mutate(currency_unit = ifelse(long_country_code=="EMU", "Euro", as.character(currency_unit)))
+
+# IRB adoption year
+IRB.indicator <- read_xlsx("Data/Raw/Pillar3/Auxiliar/Auxiliar.xlsx", sheet = 1)  %>%
+  pivot_longer(cols      = where(is.numeric),
+               names_to  = "year",
+               values_to = "IRB")%>%
+  select(bank_name = name, country_code_lender = Country, bvdid_new, bvdid_old, year, IRB)%>%
+  mutate(year = as.numeric(year))
+
+# Basel II introduction
+basel.indicator <- read_xlsx("Data/Raw/Pillar3/Auxiliar/Auxiliar.xlsx", sheet = 2) %>%
+  select(country_code_lender = Country, basel = year)
+
+# World Development Indicators
+WDI <- read.csv("Data/Raw/WDI/WDIData.csv", fileEncoding = "UTF-8-BOM", check.names = FALSE) %>%
+  select(!(""))%>%
+  rename_all(tolower)%>%
+  rename_all(~ str_replace_all(.,"[:blank:]", "\\_"))%>%
+  filter(indicator_code %in% c("NY.GDP.DEFL.ZS","NY.GDP.PCAP.KD","NY.GDP.MKTP.KD.ZG","PA.NUS.FCRF",
+                               "PX.REX.REER","FS.AST.DOMS.GD.ZS","FS.AST.PRVT.GD.ZS","FD.AST.PRVT.GD.ZS","FP.CPI.TOTL")) %>%
+  pivot_longer(cols      = where(is.numeric),
+               names_to  = "year") %>%
+  select(long_country_code = country_code, indicator_name, year, value) %>%
+  pivot_wider(names_from = indicator_name,
+              values_from = value) %>% 
+  rename_all(~ str_replace_all(.,"[:blank:]\\(.*\\)",""))%>%
+  rename_all(~ str_replace_all(.,"[:blank:]", "\\_"))%>%
+  rename_all(tolower)%>%
+  inner_join(select(country.code, long_country_code, short_country_code, currency_unit))%>%
+  mutate(group_var     = ifelse(is.na(official_exchange_rate)| long_country_code == "EMU", 
+                                  paste(currency_unit, year, sep = ""), NA),
+         exchange_rate = na.aggregate(official_exchange_rate, by = group_var),
+         country_code  = short_country_code,
+         year          = as.numeric(year)) %>%
+  select(-group_var, -currency_unit, -official_exchange_rate, -long_country_code)
+
+# IFS dataset
+IFS <- read.csv("Data/Raw/IFS/IFS.csv", fileEncoding="UTF-8-BOM", check.names = FALSE) %>%
+  select(!("")) %>%
+  rename_all(tolower) %>%
+  rename_all(~ str_replace_all(.,"[:blank:]", "\\_")) %>%
+  filter(indicator_code %in% c("FPOLM_PA")) %>%
+  select(-country_name, -attribute, -contains("indicator")) %>%
+  mutate_all(as.numeric) %>%
+  pivot_longer(cols      = -country_code,
+               names_to = c("year", "month"),
+               names_pattern = "(.*)m(.*)",
+               values_to = "policy_rate") %>%
+  inner_join(mutate(ifs.country.code, country_code = as.numeric(imf_code), long_country_code = iso_code)) %>%
+  inner_join(select(country.code, long_country_code, short_country_code))%>%
+  select(country_code = short_country_code, year, month, policy_rate)
+ 
+
+# Bank Regulation and Supervision
+load("Data/Raw/BRSS/Output/BRSS.Rdata") 
+
+BRSS <- BRSS %>%
+     rename_all(tolower) %>%
+     rename(country_name = country.name,
+            country_code = country)
 
 save(list = c("IRB.indicator", "WDI", "BRSS", "basel.indicator"),
      file=paste0("Data/Temp/AuxiliarData.Rda"))
