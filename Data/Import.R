@@ -13,7 +13,7 @@ library(tidyverse)    ## Data manipulation, pipe operator
 library(readxl)       ## Command to open xlsx files                                                     
 library(data.table)   ## Command to bind lists
 library(stringr)      ## Command to clean variables names in Orbis
-library(zoo)          ## Command to replace missing values by other group's mean value 
+library(zoo)          ## Command to replace missing values by other group's mean value and rolling average
 
 rm(list = ls()) 
 
@@ -88,10 +88,17 @@ IFS <- read.csv("Data/Raw/IFS/IFS.csv", fileEncoding="UTF-8-BOM", check.names = 
                names_pattern = "(.*)m(.*)",
                values_to = "policy_rate") %>%
   inner_join(mutate(ifs.country.code, country_code = as.numeric(imf_code), long_country_code = iso_code)) %>%
-  inner_join(select(country.code, long_country_code, short_country_code))%>%
-  select(country_code = short_country_code, year, month, policy_rate)
+  inner_join(select(country.code, long_country_code, short_country_code)) %>%
+  select(country_code = short_country_code, year, month, policy_rate) %>%
+  ungroup() %>% 
+  arrange(country_code, year, month) %>% 
+  group_by(country_code) %>%
+  mutate(policy_rate.ma3    = rollapply(policy_rate, 3, mean, align='right', fill=NA),
+         policy_rate.cma6   = rollapply(policy_rate, 6, mean, align='center', fill=NA),
+         policy_rate.delta3 = policy_rate - lag(policy_rate, n = 2),
+         year               = as.numeric(year),
+         month              = as.numeric(month))
  
-
 # Bank Regulation and Supervision
 load("Data/Raw/BRSS/Output/BRSS.Rdata") 
 
@@ -100,7 +107,7 @@ BRSS <- BRSS %>%
      rename(country_name = country.name,
             country_code = country)
 
-save(list = c("IRB.indicator", "WDI", "BRSS", "basel.indicator"),
+save(list = c("IRB.indicator", "WDI", "BRSS", "basel.indicator", "IFS"),
      file=paste0("Data/Temp/AuxiliarData.Rda"))
 
 ##============================================================================##
@@ -172,43 +179,46 @@ data.list  <- data.names %>%
   lapply(read_xlsx,sheet = 1,  skip=1)   
 pillar3.data <-  rbindlist(data.list, use.names=TRUE,fill = TRUE) %>%
   select(1:25) %>%
-  mutate_at(vars(EAD:PD),as.numeric)%>%
-  rename(Portfolio_1 = `Portfolio - level 1`,
-         Portfolio_2 = `Portfolio - level 2`) %>%
+  mutate_at(vars(EAD:PD), as.numeric)%>%
+  rename(portfolio_1         = `Portfolio - level 1`,
+         portfolio_2         = `Portfolio - level 2`,
+         country_code_lender = Country) %>%
   mutate(month       = as.numeric(sapply(Date, str_sub, start= 4, end=5)),
          year        = as.numeric(sapply(Date, str_sub, start= -4)),
          year        = ifelse(is.na(month), year, ifelse(month<6, year-1, year)),
          bvdid       = as.factor(bvdid),
          Method      = as.factor(Method),
-         Method2     = as.factor(ifelse(Method %in% c("IRB"), "IRB", sapply(Method, str_sub, start= 2, end=4))),
-         Portfolio_1 = as.factor(Portfolio_1),
-         Portfolio_2 = as.factor(Portfolio_2))
+         method2     = as.factor(ifelse(Method %in% c("IRB"), "IRB", sapply(Method, str_sub, start= 2, end=4))),
+         portfolio_1 = as.factor(portfolio_1),
+         portfolio_2 = as.factor(portfolio_2))
 
 # Add short names to data frame and currency and inflation conversion
 pillar3.data <- IRB.indicator %>%
-  select(name, bvdid = bvdid_new) %>% 
+  select(bank_name, bvdid = bvdid_new) %>% 
   distinct(bvdid, .keep_all = TRUE) %>%
   inner_join(pillar3.data) %>%
   # Add macro variables
-  left_join(select(WDI, Country, year, er), by = c("Country", "year")) %>%
-  # Convert and deflate using REER
-  mutate(EAD = EAD/er,
-         RWA = RWA/er)%>%
-  filter(Method2 == "IRB", Portfolio_1 == "Wholesale", Portfolio_2 == "Corporate" |  Portfolio_2 == "Total") %>%
-  group_by(name, bvdid, Country, year) %>%
+  left_join(select(WDI, country_code_lender = country_code, year, exchange_rate), 
+            by = c("country_code_lender", "year")) %>%
+  # Convert to USD
+  mutate(EAD = EAD/exchange_rate,
+         RWA = RWA/exchange_rate)%>%
+  filter(method2 == "IRB", portfolio_1 == "Wholesale", portfolio_2 == "Corporate" | portfolio_2 == "Total") %>%
+  group_by(bank_name, bvdid, country_code_lender, year) %>%
   summarise(RWA = sum(RWA, na.rm = TRUE),
             EAD = sum(EAD, na.rm = TRUE)) %>%
   mutate(RW = ifelse(RWA == 0 | EAD == 0, NA, RWA/EAD)) %>%
-  group_by(bvdid)%>% 
+  group_by(bvdid) %>% 
   arrange(bvdid, year) %>%
-  fill(RW, .direction = "up")%>%
-  group_by(Country, year)%>%
+  fill(RW, .direction = "up") %>%
+  group_by(country_code_lender, year) %>%
   mutate(mean.RW     = mean(RW, na.rm = TRUE),
          n_banks     = n(),
-         mean.RW_adj = (n_banks*mean.RW-RW)/(n_banks-1)) 
+         mean.RW_adj = (n_banks*mean.RW-RW)/(n_banks-1)) %>%
+  ungroup()
 
 # Save data frame
-save(pillar3.data,file=paste0("Data/Temp/Pillar3Data.Rda"))
+save(pillar3.data, file=paste0("Data/Temp/Pillar3Data.Rda"))
 
 
 ##============================================================================##
@@ -217,9 +227,9 @@ save(pillar3.data,file=paste0("Data/Temp/Pillar3Data.Rda"))
 
 # Import Orbis dataset from excel files 
 data.path  <- "Data/Raw/BankScope"
-data.names <-  list.files(path = data.path,pattern=".*(201.)\\.xlsx",full.names = TRUE)
+data.names <-  list.files(path = data.path,pattern = ".*(201.)\\.xlsx", full.names = TRUE)
 data.list  <- data.names %>%
-  lapply(read_xlsx,sheet = 1) 
+  lapply(read_xlsx, sheet = 1) 
 
 #------------------------------------------------------------------------------#
 # Reshape data from wide to long                                               #
@@ -228,17 +238,17 @@ data.list  <- data.names %>%
 for(i in 1:length(data.list)) {
   data.list[[i]] <- data.list[[i]] %>%
     # Remove row index, set variables names to lower case, rename id variable, and keep only selected sample
-    rename_all(tolower)%>%
+    rename_all(tolower)  %>%
     rename_at(vars(contains("bvd")), 
-              funs(str_replace(.,"bvd .*", "bvdid")))%>%
-    mutate(disk = paste(i)) %>% select(disk, everything())%>%
+              funs(str_replace(.,"bvd .*", "bvdid"))) %>%
+    mutate(disk = paste(i)) %>% 
+    select(disk, everything()) %>%
     # Standardize variables names to reshape dataset from wide to long
-    rename_all(funs(str_replace_all(.,"[:space:]|[:punct:]|year|=","")))%>%
-    rename_at(vars(contains("lastavailyr")), 
-              funs(str_replace(.,"last.*", "10")))%>%
-    rename_all(funs(str_replace_all(.,"([\\w])([0-9]+)$", "\\1\\.\\2")))%>%
+    rename_all(~ str_replace_all(., "[:space:]|[:punct:]|year|=", ""))  %>%
+    rename_at(vars(contains("lastavailyr")), ~ str_replace(.,"last.*", "10")) %>%
+    rename_all(~ str_replace_all(., "([\\w])([0-9]+)$", "\\1\\.\\2")) %>%
     # Turn numeric variables to numeric format
-    mutate_at(c(grep("usd", names(.))[1]:ncol(.)),as.numeric) %>%
+    mutate_at(c(grep("usd", names(.))[1]:ncol(.)), as.numeric) %>%
     # Reshape datasets to long format
     pivot_longer(cols = c(grep("\\.\\d", names(.))),
                  names_to = c(".value", "year"),
@@ -248,7 +258,7 @@ for(i in 1:length(data.list)) {
 }
 
 # Bind datasets from different disks  
-bankscope <-  rbindlist(data.list, use.names=TRUE,fill = TRUE)
+bankscope <- rbindlist(data.list, use.names=TRUE, fill = TRUE)
 
 #------------------------------------------------------------------------------#
 # First layer of data cleaning                                                 #
@@ -256,26 +266,29 @@ bankscope <-  rbindlist(data.list, use.names=TRUE,fill = TRUE)
 
 bankscope <- bankscope %>%
   # Create and correct year variable
-  mutate(month = as.numeric(sapply(closingdate,str_sub,start= 6,end=7)),
-         year  = as.numeric(sapply(closingdate,str_sub,start= 1,end=4)),
-         year  = ifelse(is.na(month),year,ifelse(month<6,year-1,year))) %>%
+  mutate(month = as.numeric(sapply(closingdate, str_sub, start= 6, end=7)),
+         year  = as.numeric(sapply(closingdate, str_sub, start= 1, end=4)),
+         year  = ifelse(is.na(month), year, ifelse(month<6, year-1, year))) %>%
   # Harmonize bvdid (for some banks and countries it has changed from one disk to another)
   full_join(IRB.indicator, by = c("bvdid" = "bvdid_old", "year")) %>%
   full_join(IRB.indicator, by = c("bvdid" = "bvdid_new", "year")) %>%
   mutate(bvdid = ifelse(is.na(bvdid_old), ifelse(is.na(bvdid_new), bvdid, bvdid_new), bvdid)) %>%
   # Keep unique bank-year observations from sample, and remove strange observations from 1969 (?!?)
   filter(bvdid %in% IRB.indicator$bvdid_new, year != 1969, conscode %in% c("C1","C2","U1")) %>%
-  group_by(bvdid,year) %>% arrange(desc(disk), .by_group = TRUE) %>%
-  distinct(bvdid,year, .keep_all = TRUE) %>% ungroup() %>%
+  group_by(bvdid, year) %>% 
+  arrange(desc(disk), .by_group = TRUE) %>%
+  distinct(bvdid, year, .keep_all = TRUE) %>% 
+  ungroup() %>%
   # Fix variables from the IRB indicator data frame
-  mutate(IRB     = ifelse(is.na(IRB.x),IRB.y,IRB.x),
-         name    = ifelse(is.na(name.x),name.y,name.x),
-         Country = ifelse(is.na(Country.x),Country.y,Country.x)) %>%
+  mutate(bank_name    = ifelse(is.na(bank_name.x), bank_name.y, bank_name.x),
+         country_code_lender = ifelse(is.na(country_code_lender.x), country_code_lender.y, country_code_lender.x)) %>%
   # Reorder variables and remove auxiliar variables
-  select(name,  Country, IRB, everything(), -contains("_"), -contains("."),
+  select(bank_name,  country_code_lender, everything(), -contains("."),
          -c("companyname", "countryisocode","lastavail", "guoname", "conscode",
             "status", "listeddelistedunlisted", "delisteddate", "guobvdid", "guocountryisocode",
-            "guotype", "closingdate", "month", "1", "IRB"))
+            "guotype", "closingdate", "month", "1", "bvdid_new", "bvdid_old")) %>%
+  ungroup()
+
 
 # Save data frame
 save(bankscope,file=paste0("Data/Temp/BankScope.Rda"))

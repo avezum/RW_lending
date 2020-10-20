@@ -40,27 +40,31 @@ loan.data <- lender.data %>%
          year               = as.numeric(sapply(tranche_active_date, str_sub, start= 1, end=4)),
          year               = ifelse(is.na(month), year, ifelse(month<6, year-1, year)),
          lender_amount_musd = tranche_amount_converted_musd*lender_share/100)%>%
-  group_by(tranche_id, bvdid, lender_parent_name, country, year)%>%
+  rename(country_name_borrower = country) %>%
+  group_by(tranche_id, bvdid, lender_parent_name, country_name_borrower, year, month)%>%
   summarise(lender_amount_musd = sum(lender_amount_musd, na.rm = TRUE)) %>%
-  full_join(select(ungroup(pillar3.data), -c("Country", "name")), by = c("bvdid", "year")) %>%
-  full_join(select(distinct(ungroup(pillar3.data), bvdid, .keep_all = TRUE), bvdid, name), by = c("bvdid")) %>%
-  left_join(select(IRB.indicator, bvdid = bvdid_new, year, IRB, Country), by = c("bvdid", "year"))%>% 
-  left_join(basel.indicator, by = c("Country"))%>%
-  left_join(BRSS, by = c("Country", "year"))%>%
-  left_join(select(filter(WDI, Country=="US"), year, cpi), by = c("year")) %>%
+  ungroup()%>%
+  full_join(select(pillar3.data, -c("country_code_lender", "bank_name")), by = c("bvdid", "year")) %>%
+  full_join(select(bankscope, -c("country_code_lender", "bank_name")), by = c("bvdid", "year")) %>%
+  left_join(select(IRB.indicator, bvdid = bvdid_new, year, IRB, country_code_lender, bank_name), by = c("bvdid", "year"))%>% 
+  left_join(basel.indicator, by = c("country_code_lender"))%>%
+  left_join(rename(BRSS, country_code_lender = country_code), by = c("country_code_lender", "year"))%>%
+  left_join(rename(WDI, country_code_lender = country_code), c("country_code_lender", "year")) %>%
+  left_join(rename(IFS, country_code_lender = country_code), c("country_code_lender", "year", "month")) %>%
+  left_join(select(filter(WDI, country_code=="US"), year, cpi_us = consumer_price_index), by = c("year")) %>%
   group_by(lender_parent_name, year)%>%
   mutate(RW                = ifelse(IRB==0, 1, RW),
-         mean.RW           = ifelse(IRB==0, 1,mean.RW),
-         mean.RW_adj       = ifelse(IRB==0, 1,mean.RW_adj),
+         mean.RW           = ifelse(IRB==0, 1, mean.RW),
+         mean.RW_adj       = ifelse(IRB==0, 1, mean.RW_adj),
          basel             = ifelse(year>=basel, 1, 0),
-         us.indicator      = ifelse(Country == "US", "US", "Other"),
+         us_indicator      = ifelse(country_code_lender == "US", "US", "Other"),
          year.factor       = as.factor(year),
          n_loans           = n(),
-         lender_amount     = lender_amount_musd/cpi,
+         lender_amount     = lender_amount_musd/consumer_price_index,
          log.lender_amount = ifelse(lender_amount>0, log(lender_amount), NA)
     )%>%
   group_by(tranche_id)%>%
-  mutate(SA.indicator = mean(RW, na.rm = TRUE)) %>%
+  mutate(tranche_SA_indicator = mean(RW, na.rm = TRUE)) %>%
   group_by(lender_parent_name)%>% 
   arrange(lender_parent_name, year) %>%
   fill(RW, .direction = "up")
