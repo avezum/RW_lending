@@ -129,66 +129,135 @@ However, it does not inform us about differences in supervisory standard. For th
 
 The results from the first and second stage estimation are shown in columns 4 and 5 of table \ref{tab:main}. The coefficient of interest remains negative and now the impact on lending is of 1.8%.
 
-```{r}
+
+
+```{r all_data, message=FALSE, warning=FALSE}
 aux.data <- loan.data %>% 
-  filter(!is.na(bvdid), year > 1999) %>% 
-  distinct(bvdid, year, .keep_all = TRUE)%>%
-  group_by(Country, year)%>%
-  summarise(RW = mean(RW, na.rm = TRUE))
-
-country.aux  = "NO"
-aux.data %>%
-  ggplot(data = filter(aux.data, Country != country.aux ), mapping = aes(y = RW, x = year)) +
-  geom_line(color = "gray70", aes(group = Country)) +
-  geom_line(data = filter(aux.data, Country == country.aux ), 
-            color = "black", linetype = 2, size = 1)+
-  stat_summary(fun=mean, aes(group=1), geom="line", colour="black", size = 1)+
-  theme_bw()
-
-```
-
-```{r}
-aux.data <- loan.data %>% 
-  filter(!is.na(bvdid), year > 1999) %>% 
-  distinct(bvdid, year, .keep_all = TRUE)%>%
-  group_by( Country, year)%>%
-  summarise(RW = mean(RW, na.rm = TRUE))
-
-country.aux1  = "US"
-country.aux2  = "CH"
-aux.data %>%
-  ggplot(data = filter(aux.data, Country != country.aux1, Country != country.aux2), 
-         mapping = aes(y = RW, x = year)) +
-  geom_line(color = "gray70", aes(group = Country)) +
-  geom_line(data = filter(aux.data, Country == country.aux1 ), 
-            color = "black", linetype = 1, size = 1)+
-  geom_line(data = filter(aux.data, Country == country.aux2 ), 
-            color = "black", linetype = 2, size = 1)+
-  theme_bw()
-```
-
-```{r}
-aux.data <- loan.data %>% 
+  ungroup() %>%
   filter(!is.na(bvdid),  between(year, 2000,2018)) %>% 
   distinct(bvdid, year, .keep_all = TRUE)%>%
   group_by(bvdid) %>%
   mutate(aux.year = sum(year))%>%
   filter(aux.year == sum(seq(2000,2018,1)))
 
-aux  = "CH"
+aux  = ""
 aux.data %>%
-  ggplot(data = filter(aux.data, Country != aux ), mapping = aes(y = RW, x = year)) +
-  geom_line(color = "gray70", aes(group = name)) +
+  ggplot(data = filter(aux.data, country_code_lender != aux ), mapping = aes(y = RW, x = year)) +
+  geom_line(color = "gray70", aes(group = bank_name)) +
    stat_summary(fun=mean, aes(group=1), geom="line", colour="black", size = 1.1)+
-  geom_line(data = filter(aux.data, Country == aux ), 
-            color = "black", linetype = 2, size = 1, aes(group = name))+
-  theme_bw()
+  geom_line(data = filter(aux.data, country_code_lender == aux ), 
+            color = "black", linetype = 2, size = 1, aes(group = bank_name))+
+  theme_bw() +
+#  scale_y_continuous(expand = c(0,0)) +
+   scale_x_continuous(expand = c(0,0)) +
+  theme(
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) 
 
 ```
 
-```{r}
+
+```{r rw_level_histogram, warning=FALSE, message=FALSE}
+aux.data %>%
+  ggplot(data = filter(aux.data, RW<1), mapping = aes(x = RW)) +
+  geom_histogram() +
+  theme_bw()+
+#scale_y_continuous(expand = c(0,0)) +
+ #  scale_x_continuous(expand = c(0,0)) +
+  theme(
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) 
+```
+```{r var_between_within}
 aux.data <- loan.data %>% 
-  filter(!is.na(bvdid),  between(year, 2000,2018)) %>% 
+  filter(!is.na(bvdid),  between(year, 2000, 2018)) %>% 
+  ungroup()%>%
+  distinct(bvdid, year, .keep_all = TRUE)%>%
+  group_by(bvdid) %>%
+  mutate(aux.year = sum(year))%>%
+  filter(aux.year == sum(seq(2000,2018,1)))
+
+aux1  = "FR"
+aux2 = "CA"
+aux3 = ""
+aux.data %>%
+  ggplot(mapping = aes(y = RW, x = year)) +
+  geom_line(data = filter(aux.data, country_code_lender == aux1 ), 
+            color = "black", linetype = 5, size = 1, aes(group = bank_name))+
+  geom_line(data = filter(aux.data, country_code_lender == aux2 ), 
+            color = "gray50", linetype = 1, size = 1, aes(group = bank_name))+
+#  geom_line(data = filter(aux.data, country_code_lender == aux3 ), 
+#            color = "black", linetype = 2, size = 1, aes(group = bank_name))+
+  theme_bw()+
+#scale_y_continuous(expand = c(0,0)) +
+   scale_x_continuous(expand = c(0,0)) +
+  theme(
+    plot.background = element_blank(),
+  #  panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) 
+
+```
+
+```{r intro_by_year, warning=FALSE, message=FALSE}
+aux.data %>% 
+  select(bvdid, bank_name, year, IRB) %>%
+  arrange(bvdid, year) %>%
+  mutate(change = IRB - lag(IRB)) %>%
+  filter(change == 1) %>%
+   ggplot( mapping = aes(x = as.factor(year))) +
+  geom_bar() +
+  theme_bw()+
+#scale_y_continuous(expand = c(0,0)) +
+ #  scale_x_continuous(expand = c(0,0)) +
+  theme(
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) 
+```
+
+```{r t_intro_within}
+aux.data <- loan.data %>% 
+  filter(!is.na(bvdid),  between(year, 2000, 2018)) %>% 
+  ungroup()%>%
+  distinct(bvdid, year, .keep_all = TRUE)%>%
+  group_by(bvdid) %>%
+  mutate(aux.year = sum(year))%>%
+  filter(aux.year == sum(seq(2000,2018,1)))
+
+aux1  = "IT"
+aux2 = ""
+aux3 = ""
+aux.data %>%
+  ggplot(mapping = aes(y = RW, x = year)) +
+  geom_line(data = filter(aux.data, country_code_lender == aux1 ), 
+            color = "black", linetype = 1, size = 1, aes(group = bank_name))+
+  geom_line(data = filter(aux.data, country_code_lender == aux2 ), 
+            color = "gray50", linetype = 1, size = 1, aes(group = bank_name))+
+#  geom_line(data = filter(aux.data, country_code_lender == aux3 ), 
+#            color = "black", linetype = 2, size = 1, aes(group = bank_name))+
+  theme_bw()+
+#scale_y_continuous(expand = c(0,0)) +
+   scale_x_continuous(expand = c(0,0)) +
+  theme(
+    plot.background = element_blank(),
+  #  panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) 
+
+```
+
+
+
+
+```{r t_intro_between}
+aux.data <- loan.data %>% 
+  filter(!is.na(bvdid),  between(year, 2000, 2018)) %>% 
   ungroup()%>%
   distinct(bvdid, year, .keep_all = TRUE)%>%
   group_by(bvdid) %>%
@@ -196,77 +265,170 @@ aux.data <- loan.data %>%
   filter(aux.year == sum(seq(2000,2018,1)))
 
 aux1  = "US"
-aux2 = "CH"
+aux2 = "DE"
+aux3 = ""
 aux.data %>%
-  ggplot(data = filter(aux.data, Country != aux1, Country != aux2 ), mapping = aes(y = RW, x = year)) +
-  geom_line(color = "gray70", aes(group = name)) +
-  geom_line(data = filter(aux.data, Country == aux1 ), 
-            color = "black", linetype = 1, size = 1, aes(group = name))+
-  geom_line(data = filter(aux.data, Country == aux2 ), 
-            color = "black", linetype = 2, size = 1, aes(group = name))+
-  theme_bw()
+  ggplot(mapping = aes(y = RW, x = year)) +
+  geom_line(data = filter(aux.data, country_code_lender == aux1 ), 
+            color = "black", linetype = 5, size = 1, aes(group = bank_name))+
+  geom_line(data = filter(aux.data, country_code_lender == aux2 ), 
+            color = "gray50", linetype = 1, size = 1, aes(group = bank_name))+
+#  geom_line(data = filter(aux.data, country_code_lender == aux3 ), 
+#            color = "black", linetype = 2, size = 1, aes(group = bank_name))+
+  theme_bw()+
+#scale_y_continuous(expand = c(0,0)) +
+   scale_x_continuous(expand = c(0,0)) +
+  theme(
+    plot.background = element_blank(),
+  #  panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) 
 
 ```
 
-```{r}
+
+
+
+```{r data_trend}
 aux.data <- loan.data %>% 
-  filter(!is.na(bvdid),  between(year, 2000,2018)) %>% 
+  filter(!is.na(bvdid),  between(year, 2000, 2018)) %>% 
   ungroup()%>%
   distinct(bvdid, year, .keep_all = TRUE)%>%
   group_by(bvdid) %>%
   mutate(aux.year = sum(year))%>%
   filter(aux.year == sum(seq(2000,2018,1)))
 
-aux1  = "ES"
-aux2 = "IT"
+aux1  = "CH"
+aux2 = "SE"
+aux3 = ""
 aux.data %>%
-  ggplot(data = filter(aux.data, Country != aux1, Country != aux2 ), mapping = aes(y = RW, x = year)) +
-  geom_line(color = "gray70", aes(group = name)) +
-  geom_line(data = filter(aux.data, Country == aux1 ), 
-            color = "black", linetype = 1, size = 1, aes(group = name))+
-  geom_line(data = filter(aux.data, Country == aux2 ), 
-            color = "black", linetype = 2, size = 1, aes(group = name))+
-  theme_bw()
+  ggplot(mapping = aes(y = RW, x = year)) +
+  geom_line(data = filter(aux.data, country_code_lender == aux1 ), 
+            color = "black", linetype = 5, size = 1, aes(group = bank_name))+
+  geom_line(data = filter(aux.data, country_code_lender == aux2 ), 
+            color = "gray50", linetype = 1, size = 1, aes(group = bank_name))+
+#  geom_line(data = filter(aux.data, country_code_lender == aux3 ), 
+#            color = "black", linetype = 2, size = 1, aes(group = bank_name))+
+  theme_bw()+
+#scale_y_continuous(expand = c(0,0)) +
+   scale_x_continuous(expand = c(0,0)) +
+  theme(
+    plot.background = element_blank(),
+  #  panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) 
 
 ```
 
-```{r}
+
+```{r lender_country_total_amount, warning=FALSE, message=FALSE}
 aux.data <- loan.data %>% 
-  filter(!is.na(bvdid), country != country.name) %>%
-  group_by(Country, year)%>%
+  filter(!is.na(bvdid)) %>%
+  group_by(country_code_lender, year)%>%
   summarise(lender_amount = sum(lender_amount, na.rm = TRUE)/1000)
 
 country.aux1  = "US"
 country.aux2  = "GB"
 aux.data %>%
- ggplot(data = filter(aux.data, Country != country.aux1, Country != country.aux2), 
+ ggplot(data = filter(aux.data, country_code_lender != country.aux1, country_code_lender != country.aux2), 
         mapping = aes(x = year, y = lender_amount)) +
-  geom_line(color = "gray70", aes(group = Country)) +
-  geom_line(data = filter(aux.data, Country == country.aux1 ),
+  geom_line(color = "gray70", aes(group = country_code_lender)) +
+  geom_line(data = filter(aux.data, country_code_lender == country.aux1 ),
             color = "black", linetype = 1, size = 1)+
-  geom_line(data = filter(aux.data, Country == country.aux2 ),
+  geom_line(data = filter(aux.data, country_code_lender == country.aux2 ),
             color = "black", linetype = 2, size = 1)+
-  theme_bw()
+    theme_bw()+
+#scale_y_continuous(expand = c(0,0)) +
+   scale_x_continuous(expand = c(0,0)) +
+  theme(
+    plot.background = element_blank(),
+  #  panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) 
 
 ```
 
-```{r}
+
+
+```{r lender_country_cross_amount, warning=FALSE, message=FALSE}
 aux.data <- loan.data %>% 
-  filter(!is.na(bvdid), country != country.name) %>%
-  group_by(country, year)%>%
+  filter(!is.na(bvdid), country_name_borrower != country_name) %>%
+  group_by(country_code_lender, year)%>%
+  summarise(lender_amount = sum(lender_amount, na.rm = TRUE)/1000)
+
+country.aux1  = "US"
+country.aux2  = "GB"
+aux.data %>%
+ ggplot(data = filter(aux.data, country_code_lender != country.aux1, country_code_lender != country.aux2), 
+        mapping = aes(x = year, y = lender_amount)) +
+  geom_line(color = "gray70", aes(group = country_code_lender)) +
+  geom_line(data = filter(aux.data, country_code_lender == country.aux1 ),
+            color = "black", linetype = 1, size = 1)+
+  geom_line(data = filter(aux.data, country_code_lender == country.aux2 ),
+            color = "black", linetype = 2, size = 1)+
+    theme_bw()+
+#scale_y_continuous(expand = c(0,0)) +
+   scale_x_continuous(expand = c(0,0)) +
+  theme(
+    plot.background = element_blank(),
+  #  panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) 
+
+```
+```{r borrower_country_total_amount, warning=FALSE, message=FALSE}
+aux.data <- loan.data %>% 
+  filter(!is.na(bvdid)) %>%
+  group_by(country_name_borrower, year)%>%
   summarise(lender_amount = sum(lender_amount, na.rm = TRUE)/1000)
 
 country.aux1  = "United States"
 country.aux2  = "United Kingdom"
 aux.data %>%
-  ggplot(data = filter(aux.data, country != country.aux1, country != country.aux2), 
+  ggplot(data = filter(aux.data, country_name_borrower != country.aux1, country_name_borrower != country.aux2), 
          mapping = aes(y = lender_amount, x = year)) +
-  geom_line(color = "gray70", aes(group = country)) +
-  geom_line(data = filter(aux.data, country == country.aux1 ), 
+  geom_line(color = "gray70", aes(group = country_name_borrower)) +
+  geom_line(data = filter(aux.data, country_name_borrower == country.aux1 ), 
             color = "black", linetype = 1, size = 1.1)+
-  geom_line(data = filter(aux.data, country == country.aux2 ), 
+  geom_line(data = filter(aux.data, country_name_borrower == country.aux2 ), 
             color = "black", linetype = 2, size = 1.1)+
-  theme_bw()
+    theme_bw()+
+#scale_y_continuous(expand = c(0,0)) +
+   scale_x_continuous(expand = c(0,0)) +
+  theme(
+    plot.background = element_blank(),
+  #  panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) 
+
+```
+
+
+
+```{r borrower_country_cross_amount, warning=FALSE, message=FALSE}
+aux.data <- loan.data %>% 
+  filter(!is.na(bvdid), country_name_borrower != country_name) %>%
+  group_by(country_name_borrower, year)%>%
+  summarise(lender_amount = sum(lender_amount, na.rm = TRUE)/1000)
+
+country.aux1  = "United States"
+country.aux2  = "United Kingdom"
+aux.data %>%
+  ggplot(data = filter(aux.data, country_name_borrower != country.aux1, country_name_borrower != country.aux2), 
+         mapping = aes(y = lender_amount, x = year)) +
+  geom_line(color = "gray70", aes(group = country_name_borrower)) +
+  geom_line(data = filter(aux.data, country_name_borrower == country.aux1 ), 
+            color = "black", linetype = 1, size = 1.1)+
+  geom_line(data = filter(aux.data, country_name_borrower == country.aux2 ), 
+            color = "black", linetype = 2, size = 1.1)+
+    theme_bw()+
+#scale_y_continuous(expand = c(0,0)) +
+   scale_x_continuous(expand = c(0,0)) +
+  theme(
+    plot.background = element_blank(),
+  #  panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) 
 
 ```
 \section{Sample} \label{sec:sample}
@@ -288,7 +450,7 @@ aux.data %>%
 
 ```{r summary1, eval=TRUE, fig.height = 10, fig.width = 7, results="asis",out.width = "1\\textwidth"}
 loan.data %>%
-        filter(year>1994, country != country.name) %>% 
+        filter(year>1994, country_name_borrower != country_name) %>% 
   select(
   log.lender_amount,
   RW,
@@ -327,19 +489,19 @@ stargazer(header = FALSE, type="latex", single.row = TRUE, column.sep.width = "1
 reg.list <- list()
 se.list <- list()
 reg.list[[1]] <- felm(log.lender_amount ~ RW  | as.factor(bvdid) + tranche_id | 0 | 0,
-                      data = filter(loan.data, country != country.name, year > 1994))
+                      data = filter(loan.data, country_name_borrower != country_name, year > 1994))
 se.list[[1]]  <- summary(reg.list[[1]], robust = TRUE)$coefficients[,2]
 
 
 reg.list[[3]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid) + tranche_id| (RW ~ basel) | 0,
-                      data = filter(loan.data, country != country.name, year > 1994))
+                      data = filter(loan.data, country_name_borrower != country_name, year > 1994))
 se.list[[3]]  <- summary(reg.list[[3]], robust = TRUE)$coefficients[,2]
 
 reg.list[[2]] <- reg.list[[3]]$stage1
 se.list[[2]]  <- summary(reg.list[[2]], robust = TRUE)$coefficients[,2]
 
 reg.list[[5]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid)  + tranche_id | (RW ~ mean.RW_adj ) | 0,
-                      data = filter(loan.data, country != country.name, year > 1994))
+                      data = filter(loan.data, country_name_borrower != country_name, year > 1994))
 se.list[[5]]  <- summary(reg.list[[5]], robust = TRUE)$coefficients[,2]
 
 reg.list[[4]] <- reg.list[[5]]$stage1
@@ -347,7 +509,7 @@ se.list[[4]]  <- summary(reg.list[[4]], robust = TRUE)$coefficients[,2]
 
 
 reg.list[[7]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid)  + tranche_id | (RW ~ basel + mean.RW_adj ) | 0,
-                      data = filter(loan.data, country != country.name, year > 1994))
+                      data = filter(loan.data, country_name_borrower != country_name, year > 1994))
 se.list[[7]]  <- summary(reg.list[[7]], robust = TRUE)$coefficients[,2]
 
 
@@ -399,19 +561,19 @@ stargazer(reg.list,
 reg.list <- list()
 se.list <- list()
 reg.list[[1]] <- felm(log.lender_amount ~ RW  | as.factor(bvdid) + tranche_id | 0 | 0,
-                      data = filter(loan.data, country != country.name, year > 2000))
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
 se.list[[1]]  <- summary(reg.list[[1]], robust = TRUE)$coefficients[,2]
 
 
 reg.list[[3]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid) + tranche_id| (RW ~ basel) | 0,
-                      data = filter(loan.data, country != country.name, year > 2000))
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
 se.list[[3]]  <- summary(reg.list[[3]], robust = TRUE)$coefficients[,2]
 
 reg.list[[2]] <- reg.list[[3]]$stage1
 se.list[[2]]  <- summary(reg.list[[2]], robust = TRUE)$coefficients[,2]
 
 reg.list[[5]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid)  + tranche_id | (RW ~ mean.RW_adj ) | 0,
-                      data = filter(loan.data, country != country.name, year > 2000))
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
 se.list[[5]]  <- summary(reg.list[[5]], robust = TRUE)$coefficients[,2]
 
 reg.list[[4]] <- reg.list[[5]]$stage1
@@ -419,7 +581,7 @@ se.list[[4]]  <- summary(reg.list[[4]], robust = TRUE)$coefficients[,2]
 
 
 reg.list[[7]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid)  + tranche_id | (RW ~ basel + mean.RW_adj ) | 0,
-                      data = filter(loan.data, country != country.name, year > 2000))
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
 se.list[[7]]  <- summary(reg.list[[7]], robust = TRUE)$coefficients[,2]
 
 
@@ -471,19 +633,19 @@ stargazer(reg.list,
 reg.list <- list()
 se.list <- list()
 reg.list[[1]] <- felm(log.lender_amount ~ RW  | as.factor(bvdid) + tranche_id | 0 | 0,
-                      data = filter(loan.data, country != country.name, year > 2000))
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2007))
 se.list[[1]]  <- summary(reg.list[[1]], robust = TRUE)$coefficients[,2]
 
 
 reg.list[[3]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid) + tranche_id| (RW ~ IRB) | 0,
-                      data = filter(loan.data, country != country.name, year > 2000))
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2007))
 se.list[[3]]  <- summary(reg.list[[3]], robust = TRUE)$coefficients[,2]
 
 reg.list[[2]] <- reg.list[[3]]$stage1
 se.list[[2]]  <- summary(reg.list[[2]], robust = TRUE)$coefficients[,2]
 
 reg.list[[5]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid)  + tranche_id | (RW ~ mean.RW_adj ) | 0,
-                      data = filter(loan.data, country != country.name, year > 2000))
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2007))
 se.list[[5]]  <- summary(reg.list[[5]], robust = TRUE)$coefficients[,2]
 
 reg.list[[4]] <- reg.list[[5]]$stage1
@@ -491,7 +653,7 @@ se.list[[4]]  <- summary(reg.list[[4]], robust = TRUE)$coefficients[,2]
 
 
 reg.list[[7]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid)  + tranche_id | (RW ~ IRB + mean.RW_adj ) | 0,
-                      data = filter(loan.data, country != country.name, year > 2000))
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2007))
 se.list[[7]]  <- summary(reg.list[[7]], robust = TRUE)$coefficients[,2]
 
 
@@ -538,3 +700,59 @@ stargazer(reg.list,
           float.env        = "sidewaystable")
 ```
 
+```{r regressions_irb, echo=FALSE, }
+
+# Run the models
+reg.list <- list()
+se.list <- list()
+reg.list[[1]] <- felm(log.lender_amount ~ RW  | as.factor(bvdid) + tranche_id | 0 | 0,
+                      data = filter(loan.data, country_name_borrower != country_name, IRB == 1))
+se.list[[1]]  <- summary(reg.list[[1]], robust = TRUE)$coefficients[,2]
+
+
+reg.list[[3]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid) + tranche_id| (RW ~ mean.RW_adj) | 0,
+                      data = filter(loan.data, country_name_borrower != country_name, IRB == 1))
+se.list[[3]]  <- summary(reg.list[[3]], robust = TRUE)$coefficients[,2]
+
+reg.list[[2]] <- reg.list[[3]]$stage1
+se.list[[2]]  <- summary(reg.list[[2]], robust = TRUE)$coefficients[,2]
+
+
+
+```
+
+```{r tables_aux_irb, echo=FALSE}
+
+# Dependent variables
+dep.text <- c("$\\text{Log loan}_{l,i}$", "$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+
+# Independent variables
+ind.text <- c( "$\\text{RW}_{i,t}$", "$\\overline{\\text{RW}}_{c,t}$",  "$\\widehat{\\text{RW}}_{c,t}$")
+
+fe.list <- list(c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Bank $\\times$ year FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))))
+
+```
+
+```{r table_regression_irb, eval=TRUE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+stargazer(reg.list,
+          title = "Results",
+          table.layout = "n=c=d#-t-as-",
+          notes = "\\parbox[t]{14cm}{The table shows the effect of risk-weights on corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a facility. The independent variable is the average risk-weight of the bank's corporate portfolio in the year that the facility was issued. All regressions include facility and bank fixed effects. Robust standard errors are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          dep.var.labels   = dep.text,
+          covariate.labels = ind.text,
+          add.lines        = fe.list,
+          se               = se.list,
+          keep.stat        = c("n","rsq"),
+          header           = FALSE, 
+          type             = "latex",
+          font.size        = "footnotesize",
+          notes.label      = "",
+          notes.align      = "c", 
+          notes.append     = FALSE,
+          label            = "tab:main",
+          style            = "qje",
+          column.sep.width = "0.5pt",
+          align            = TRUE,
+          float.env        = "sidewaystable")
+```
