@@ -52,6 +52,14 @@ IRB.indicator <- read_xlsx("Data/Raw/Pillar3/Auxiliar/Auxiliar.xlsx", sheet = 1)
 basel.indicator <- read_xlsx("Data/Raw/Pillar3/Auxiliar/Auxiliar.xlsx", sheet = 2) %>%
   select(country_code_lender = Country, basel = year)
 
+# SSM introduction
+SSM.indicator <- read_xlsx("Data/Raw/Pillar3/Auxiliar/Auxiliar.xlsx", sheet = 4)  %>%
+  pivot_longer(cols      = where(is.numeric),
+               names_to  = "year",
+               values_to = "SSM")%>%
+  select(bvdid, year, SSM)%>%
+  mutate(year = as.numeric(year))
+
 # World Development Indicators
 WDI <- read.csv("Data/Raw/WDI/WDIData.csv", fileEncoding = "UTF-8-BOM", check.names = FALSE) %>%
   select(!(""))%>%
@@ -107,7 +115,7 @@ BRSS <- BRSS %>%
      rename(country_name = country.name,
             country_code = country)
 
-save(list = c("IRB.indicator", "WDI", "BRSS", "basel.indicator", "IFS"),
+save(list = c("IRB.indicator", "WDI", "BRSS", "basel.indicator", "IFS", "SSM.indicator"),
      file=paste0("Data/Temp/AuxiliarData.Rda"))
 
 ##============================================================================##
