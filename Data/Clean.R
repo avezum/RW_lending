@@ -50,6 +50,7 @@ loan.data <- lender.data %>%
   left_join(basel.indicator, by = c("country_code_lender"))%>%
   left_join(SSM.indicator, by = c("bvdid", "year"))%>%
   left_join(rename(BRSS, country_code_lender = country_code), by = c("country_code_lender", "year"))%>%
+  left_join(rename(country.names, country_code_lender = country_code), by = c("country_code_lender"))%>%
   left_join(rename(WDI, country_code_lender = country_code), c("country_code_lender", "year")) %>%
   left_join(rename(IFS, country_code_lender = country_code), c("country_code_lender", "year", "month")) %>%
   left_join(select(filter(WDI, country_code=="US"), year, cpi_us = consumer_price_index), by = c("year")) %>%
@@ -69,7 +70,8 @@ loan.data <- lender.data %>%
   mutate(tranche_SA_indicator = mean(RW, na.rm = TRUE)) %>%
   group_by(lender_parent_name)%>% 
   arrange(lender_parent_name, year) %>%
-  fill(RW, .direction = "up")
+  fill(RW, .direction = "up")%>%
+  ungroup()
 
 save(loan.data, file=paste0("Data/Datasets/LoanData.Rda"))
 

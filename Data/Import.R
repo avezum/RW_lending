@@ -110,12 +110,18 @@ IFS <- read.csv("Data/Raw/IFS/IFS.csv", fileEncoding="UTF-8-BOM", check.names = 
 # Bank Regulation and Supervision
 load("Data/Raw/BRSS/Output/BRSS.Rdata") 
 
-BRSS <- BRSS %>%
+country.names <- BRSS %>%
      rename_all(tolower) %>%
-     rename(country_name = country.name,
-            country_code = country)
+     select(country_name = country.name,
+            country_code = country)%>%
+  distinct(country_name, .keep_all = TRUE)
 
-save(list = c("IRB.indicator", "WDI", "BRSS", "basel.indicator", "IFS", "SSM.indicator"),
+BRSS <- BRSS %>%
+  rename_all(tolower) %>%
+  rename(country_code = country)%>%
+  select(-country.name)
+
+save(list = c("IRB.indicator", "WDI", "BRSS", "country.names", "basel.indicator", "IFS", "SSM.indicator"),
      file=paste0("Data/Temp/AuxiliarData.Rda"))
 
 ##============================================================================##
