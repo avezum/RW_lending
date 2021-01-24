@@ -20,10 +20,10 @@ csl: ../../Auxiliar/Citation_styles/american-marketing-association.csl
 #anonymous: no
 fontsize: 11pt
 geometry: margin= 1in
-header-includes: \usepackage{rotating, graphicx, dcolumn, longtable, float, siunitx, tabularx, appendix} 
+header-includes: \usepackage{rotating, graphicx, dcolumn, longtable, float, siunitx, tabularx, appendix, booktabs} 
 keywords: Internal ratings-based models, Risk-weighted assets dispersion, Procyclicality
 linkcolor: black
-abstract: 
+abstract: The first objective of this project is to estimate the impact of the introduction of the internal ratings based approach to calculate risk-weights on lending supply. The second is to estimate how much of the changes in credit supply is driven by differences in supervisory standards/ regulatory arbitrage across jurisdictions.
 spacing: double
 indent: true
 subtitle: ''
@@ -68,6 +68,7 @@ library(ggpubr)               ## More plots
 library(splitstackshape)      ## Command to expand data
 library(latex2exp)            ## Use latex code in plots
 library(lemon)                ## Plot brackets
+library(fastDummies)
 #library(mosaic)               ## Package to calculate derivatives
 #library(textablr)
 #library(sandwich)
@@ -86,59 +87,130 @@ load("../../Data/Temp/Pillar3Data.Rda")
 ```
 
 
-\section{Recap} \label{sec:intro}
+\section{Introduction} \label{sec:intro}
 
 The first objective of this project is to estimate the impact of the introduction of the internal ratings based approach to calculate risk-weights on lending supply. The second is to estimate how much of the changes in credit supply is driven by differences in supervisory standards/ regulatory arbitrage across jurisdictions.
 
-First, I regress the log of the amount lent by a bank to a firm on the average risk-weight to corporate of this bank. To control for demand factor we explore the fact that several banks lend different amounts to a firm in a facility/tranche. 
+The objective of model-based capital
+requirements was to obtain higher risk
+sensitivity and thus increase the efficiency
+of credit allocation. However, this objective had to be weighed against banks’
+incentives to use “artificially low” internal
+estimates. Naturally, supervisors have
+to prevent the latter from happening.
+Another concern was whether differences
+in banks’ and supervisory standards
+regarding the implementation of models
+would make the outcomes comparable
+across jurisdictions. 
 
-\begin{equation}
-\label{eq:simple}
-\text{Log loan}_{f,b} = \beta\text{RW}_{b,t}+\alpha_{f,t}+\alpha_{b}+\varepsilon_{l,b,t}
-\end{equation}
 
-where $\text{Log tranche}_{f,b}$ is the amount lent by bank $b$ on tranche/facility $f$ converted to USD and $\text{RW}_{b,t}$ is the risk-weight for the corporate portfolio of bank $b$ in year $t$. I match risk-weight at year $t$ to all facilities issued during the same year. $\alpha_{f,t}$ are time-varying facility fixed effects, which controls for demand, and $\alpha_{b}$ is bank fixed effects to control for other bank characteristics.
+The new Basel III regulatory framework therefore put forth substantially higher capital requirements, particularly in good times. This change has generated a lively debate on the costs and benefits of bank capital [@behn2016procyclical] (see Aiyar, Calomiris, Wieladek, 2015, Dagher, Dell’Ariccia, Laeven, Ratnovski, Tong, 2020, among others, for an overview). On the one hand, higher capital requirements can improve banks’ loss absorbing capacity and mitigate the pro-cyclicality of leverage, thus helping avoid costly financial crises (Admati and Hellwig, 2014). On the other hand, if banks meet the higher requirements by shrinking their assets rather than by raising equity, an increase in capital requirements could affect the availability and cost of bank lending, possibly dampening real economic activity (Kashyap, Stein, Hanson, Hanson, Kashyap, Stein, 2011). @behn2016procyclical
 
-The result is shown in column 1 of table \ref{tab:main}. The negative estimated coefficient is in line with the hypothesis that banks with lower risk-weights are capable or willing to provide more credit. An increase of one standard deviation of risk-weight (0.25) is associated with the amount lent decreasing by 1.5%. 
+A growing empirical literature has been looking at the effects of changes in capital requirements on bank lending.1 To address the endogeneity of capital regulation, most studies take advantage of quasi natural experiments or heterogeneity in capital requirements across banks.
 
-Second, I instrument the time variation in risk-weights by the introduction to Basel II as this date is exogenous to
-the bank. This instrument allow us to estimate the exogenous impact of changes in risk-weight on lending.
 
-\begin{equation}
-\label{eq:first1}
-\text{RW}_{b,t} = \gamma\text{Basel II}_{c,t}+\alpha_{l}+\alpha_{b}+\varepsilon_{l,b,t}
-\end{equation}
-
-where $\text{Basel II}_{c,t}$ is a dummy variable that takes the value of 1 from the time Basel II was introduced in the home country of the parent bank.
- 
-The second stage is then estimated with the following equation:
- 
-\begin{equation}
-\label{eq:iv1}
-\text{Log loan}_{l,b} = \beta\widehat{\text{RW}}_{b,t}+\alpha_{l}+\alpha_{b}+\varepsilon_{l,b,t}
-\end{equation}
-
- where $\widehat{\text{RW}}_{b,t}$ is the fitted value obtained from equation \ref{eq:first1}. The results from the first and second stage estimation are shown in columns 2 and 3 of table \ref{tab:main}. The coefficient remains negative and it has increased in magnitude.
-
-However, it does not inform us about differences in supervisory standard. For this purpose, we include the country average risk-weight, $\overline{\text{RW}}_{c,t}$. This measure tries to capture the exogenous cross-section of the supervisory leniency/standard. Note, it fails as a proxy for supervisory standard in the case that banks within the same jurisdiction systematically have the same risk preference.
+The empirical strategy relies on the use of loan-level information to control for borrower characteristics and two instruments: the introduction of Basel II and the country average risk-weight.  
+To calculate the proposed measures of capital savings, one needs information on the distribution of banks’ regulatory risk parameters. However, data at such granularity is not available in the common balance sheet datasets. Although very detailed, datasets from credit registers are restricted to one country, and may still lack the relevant information. Therefore, to overcome data limitations, I collect information on the distribution of credit risk parameters (PD, EAD and LGD) from banks' individual Pillar-3 reports. The sample consists of 59 large banking groups, from 15 countries, that have adopted the IRB approach. For each bank, I collected consolidated information from the year the IRB approach was approved until 2018. The dataset distinguishes between wholesale, retail and equity portfolios and, in most cases, between their sub-categories (for instance, corporate, sovereign, and banks for wholesale, and real estate, qualifying revolving credit, and others for retail). This level of portfolio breakdown is important because regulatory formulas vary across categories, and consequently, more precise knowledge of portfolio composition reduces measurements errors. 
 
 \begin{equation}
 \label{eq:first2}
-\text{RW}_{b,t} = \gamma\text{Basel II}_{c,t}+\eta\overline{\text{RW}}_{c,t}+\alpha_{l}+\alpha_{b}+\varepsilon_{l,b,t}
+\text{RW}_{i,t} = \gamma\text{Basel II}_{c,t} +\eta\overline{\text{RW}}_{c,-i,t}+\phi X_{i,t}+\kappa Y_{c,t} +\alpha_{l}+\alpha_{i}+\varepsilon_{l,i,t}
 \end{equation}
 
-The results from the first and second stage estimation are shown in columns 4 and 5 of table \ref{tab:main}. The coefficient of interest remains negative and now the impact on lending is of 1.8%.
+
+
+\begin{equation}
+\label{eq:iv1}
+\text{Log loan}_{l,i} = \beta\widehat{\text{RW}}_{i,t}+\phi X_{i,t}+\kappa Y_{c,t}+\alpha_{l}+\alpha_{i}+\varepsilon_{l,i,t}
+\end{equation}
+
+where $\text{Log loan}_{l,i}$ is the amount lent by bank $i$ on tranche/loan $l$ converted to USD and $\text{RW}_{i,t}$ is the risk-weight for the corporate portfolio of bank $i$ in year $t$. I match risk-weight at year $t$ to all facilities issued during the same year. $\alpha_{l}$ are time-varying facility fixed effects, which controls for demand and other borrower characteristics, $\alpha_{i}$ is bank fixed effects to control for unobserved time-invariant bank characteristics and, $X_{i,t}$ and $Y_{c,t}$ are bank and country controls, respectively. $\text{Basel II}_{c,t}$ is a dummy variable that takes the value of 1 from the time Basel II was introduced in the home country of the parent bank and $\overline{\text{RW}}_{c,-i,t}$ is the country average risk-weight.
 
 
 
-```{r all_data, message=FALSE, warning=FALSE}
+The remainder of this paper is organized as follows. Section \ref{sec:data} describes the capital requirement formula under the IRB approach, why it creates *Capital savings*, and the collected data and the measures of *Capital savings*. Section \ref{sec:results} presents evidence on the countercyclical feature of *Capital savings*. Section \ref{sec:additional_results} presents additional results. Finally, section \ref{sec:conclusion} concludes. 
+
+\section{Institutional Background} \label{sec:background}
+
+
+\section{Data} \label{sec:data}
+
+To study the effect of risk-weights on cross-border credit supply, we construct a sample of syndicated loans matched with bank characteristics, including the average risk-weights for their corporate portfolio. We start the section describing the sample construction and summarizing its characteristics. We then introduce in more detail the hand-collected dataset on corporate portfolio risk-weights.  
+
+\section{Sample Construction} \label{sec:sample}
+
+For information on corporate loans, we obtain data from the Loan Pricing Corporation’s Dealscan database. The Dealscan database contains several loan-level characteristics from syndicated loans along with some bank and borrower information, such as their names and location. Syndicated loans are loan agreements between one borrower and one or more lenders. For a number of syndicated loans, the Dealscan database includes the share of each bank in a syndicated loan. Hence, observations in the database are different bank-firm-loan combinations, which we define as loans for simplicity and use syndicated loan as the sum of all loans to a borrower. We assign the ultimate parent as the lender. Because we restrict our analysis to cross-border lending, we exclude observations if the borrower and lender are from the same country. 
+
+We collect information on the corporate portfolio risk-weights from banks' individual Pillar-3 reports. The sample consists of 59 large banking groups, from 15 countries, that have adopted the IRB approach. For each bank, we collected consolidated information from the year the IRB approach was approved until 2018. We select banks from developing countries to collect by their size but we were restricted by data availability from the Pillar-3 reports. We also identified several banks from the same countries that have not adopted the IRB approach and, consequently, still use the standardized approach to calculate their capital requirements. From these banks, we kept in the sample, those that have a size, measured by their total assets, as large as the smallest bank that have adopted the IRB approach.      
+
+Finally, we hand-match by name the Dealscan database with the information collected from the Pillar-3 reports with lender characteristics from the Bureau van Dijk's Bankscope database. We use the Bankscope database to collect balance sheet information for banks worldwide starting from 2001. We end up with 66,865 observations for XX banks from XX countries from 2001 to 2018.
+
+Summary statistics are shown in Table \label{tab:summary}. All variables are winsorized at 1% and 99%. Our dependent variable is the natural logarithm of the dollar amount of a bank's share in a syndicated loan ($\text{Log loan}_{l,i}$). The loans in our sample are distributed around 57 million dollars ranging from 341 thousand dollars to 382 million dollars. The main variable of interest, the corporate portfolio risk-weight ($\text{RW}_{i,t}$), averages 0.74 ranging from 0.XX to 1.00, which is the value assumed for all banks that applied the standardized approach. Our first instrument is a dummy variable that takes the value of one for the years since the introduction of the Basel II accord in a country ($\text{Basel II}_{c,t}$). The second is the average corporate portfolio risk-weight in a country excluding the risk-weight being instrumented ($\text{RW}_{c,-i,t}$). 
+
+In the empirical analysis, we also include a range of country and bank control variables. To control for the home bias riskiness that has an impact on the risk-weight measures used in this paper and that potentially affect cross-border lending, we include the GDP growth rate. Following the findings of HORVATH HUZINGA we also include the policy rate of the home country. Both of this variables are obtained from the DATABASE. $\text{Log assets}_{i,t}$ is the natural logarithm of the dollar amount of a bank's total asset.      
+
+\subsection{Corporate Portfolio Risk-weights} \label{sec:rw}
+
+In this section, we introduce in more detail the hand-collected dataset on corporate portfolio risk-weights. We provide summary statistics and describe the two sources of variation in risk-weight important for our empirical strategy: the introduction of the IRB approach and the variation between countries.   
+
+Figure \ref{fig:alldata} shows the evolution in time of corporate portfolio risk-weights for every bank that has introduced the IRB approach in the sample. There is substantial risk-weight variation among banks. Figure \ref{fig:rwhistogram} presents the distribution of corporate risk-weight under the IRB approach at the bank-year level. The average of the distribution is XX% and the interquartile range is XX%. 
+
+Figure \ref{fig:TODO} shows that the distribution of risk-weights for corporate portfolios under the IRB approach differ across countries. DESCRIBE SPECIFIC EXAMPLES. 
+
+As figure \ref{fig:betweenwithin} shows, part of the differences in variance among country are structural, in the sense that risk-weights differ among banks within a country, and not driven by different trends or cycles. Although the average risk-weights of French and Canadian banks are very similar, the risk-weight variance among Canadian banks is much larger than the variance among French banks. This pattern persists from the time the IRB approach was introduced, mostly in 2008, to the end of the sample in 2018. This structural difference in variance among countries is important because it means the predictive power of our instrument, the average risk-weight in a country excluding the risk-weight being instrumented, is different across banks. Differences in variance across countries also suggest that banks' risk-weights are not overwhelmed by a home-bias riskiness but might reflect, among other, different risk-preferences, risk modeling choices, and supervisory standards.         
+
+Figure \ref{fig:alldata} also shows the evolution of the average corporate portfolio risk-weights for the banks in the sample. The downward trend in the average risk-weight is partly explained by the banks introducing the IRB approach, which, for the most part, results in lower risk-weights than the standardized approach. Figure \ref{fig:introyear} shows the number of banks in our sample that have introduced the IRB approach between 2007 and 2018. Most banks adopted the IRB approach in 2008, but in every year since 2007 there is at least one bank that had adopted the IRB approach. The timing of IRB approach adoption varies somewhat within a country, being Italy the most extreme case where banks have introduced the IRB approach in 4 different years (see figure \ref{fig:introwithin}). There is also some variation between countries, especially when contrasting the Americans banks to others, as the former could only use the IRB approach for calculating their capital requirements from 2014 onward (see figure \ref{fig:introbetween}). The impact of the IRB adoption on the average trend is shown in figure \ref{fig:TODO}. We replace the bank-year observations after the introduction of the IRB approach for the average IRB risk-weight in time for that bank. Because we remove the within bank variation, the downward trend in figure \ref{fig:TODO} is only the results of changes in the composition between banks that have and have not adopted the IRB approach.   
+
+Figure \ref{fig:TODO} shows that within bank trend also contributes to the aggregate downward trend shown in figure \ref{fig:alldata}. In this figure, we remove the risk-weight change at the year of IRB introduction. Therefore, the downward trend in figure \ref{fig:TODO} is only the results of within bank risk-weight changes once the IRB has been introduced. It is worth noting, that the downward trend is not common feature to all banks or countries. Figure \ref{fig:trend} shows that, at the time of introduction, risk-weights for Swiss banks were lower than for their Swedish peers, however, an upward trend for Swiss banks in recent years, led to the average risk-weight in Swiss corporate portfolio being higher than the respective Swedish average in 2018.
+
+To summarize, risk-weights for corporate portfolio differ significantly across banks, and more important for this paper, across countries. The different times banks were allowed to introduce the IRB approach are another valuable source of risk-weight variation 
+
+
+
+\section{Results} \label{sec:results}
+
+
+
+
+\subsection{TBTF} \label{sec:tbtf}
+
+Regression 1 of table X shows the effect of RW on lending is smaller for large banks. Given their importance, supervisors are more likely to exert higher effort to evaluate large banks risk models. Higher scrutiny translate in lower scope to manipulate risk measures. Therefore, country level systemic differences in RWs are less relevant to large banks, that is, the instrumented RW has a smaller effect for large banks. 
+
+However, TBTF status could also play a role. To test this, we include the square of the logarithm of the total assets. While it does appears to impact 
+
+
+
+\section{Conclusion and Discussion} \label{sec:conclusion}
+
+
+\section*{References} 
+\noindent
+<div id="refs"></div>
+
+
+\newpage 
+
+# Figures {-}
+
+```{r, results="hide"}
+all_data <-  "\\label{fig:alldata}The figure plots the evolution in time of corporate portfolio risk-weights for every bank (grey lines) and the average corporate portfolio risk-weight (black line) in the sample."
+
+```
+
+```{r, message=FALSE, warning=FALSE, fig.cap = all_data, fig.align = 'center'}
 aux.data <- loan.data %>% 
   ungroup() %>%
-  filter(!is.na(bvdid),  between(year, 2000,2018)) %>% 
+  filter(bvdid %in% pillar3.data$bvdid,  between(year, 2001,2018), !is.na(lender_amount_musd)) %>% 
   distinct(bvdid, year, .keep_all = TRUE)%>%
   group_by(bvdid) %>%
   mutate(aux.year = sum(year))%>%
-  filter(aux.year == sum(seq(2000,2018,1)))
+  filter(aux.year == sum(seq(2001,2018,1)))%>%
+  arrange(bvdid, year) %>%
+  mutate(change = IRB - lag(IRB),
+         introduction_IRB = ifelse(lag(change) == 1, 1, change),
+         post_IRB = ifelse(IRB == 1 & introduction_IRB == 0, 1, 0),
+         pre_IRB  = ifelse(IRB == 1, 0, 1)) 
 
 aux  = ""
 aux.data %>%
@@ -147,6 +219,7 @@ aux.data %>%
    stat_summary(fun=mean, aes(group=1), geom="line", colour="black", size = 1.1)+
   geom_line(data = filter(aux.data, country_code_lender == aux ), 
             color = "black", linetype = 2, size = 1, aes(group = bank_name))+
+  
   theme_bw() +
 #  scale_y_continuous(expand = c(0,0)) +
    scale_x_continuous(expand = c(0,0)) +
@@ -154,48 +227,56 @@ aux.data %>%
     plot.background = element_blank(),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank()
-  ) 
+  ) +
+  labs(x = "Year")
 
 ```
 
 
-```{r rw_level_histogram, warning=FALSE, message=FALSE}
+```{r, results="hide"}
+rw_level_histogram <-  "\\label{fig:rwhistogram}The figure plots the histogram of corporate portfolio risk-weights fo all bank-year observations after banks have introduced the IRB approach."
+
+```
+
+```{r, warning=FALSE, message=FALSE, fig.cap = rw_level_histogram, fig.align = 'center'}
 aux.data %>%
-  ggplot(data = filter(aux.data, RW<1), mapping = aes(x = RW)) +
-  geom_histogram() +
+  filter(bvdid %in% pillar3.data$bvdid,  between(year, 2001,2018), !is.na(lender_amount_musd), IRB == 1) %>% 
+  ggplot( mapping = aes(x = RW)) +
+  geom_histogram(fill="grey", color="black") +
   theme_bw()+
 #scale_y_continuous(expand = c(0,0)) +
  #  scale_x_continuous(expand = c(0,0)) +
   theme(
+    axis.title.y=element_blank(),
     plot.background = element_blank(),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank()
-  ) 
+  )  
 ```
-```{r var_between_within}
-aux.data <- loan.data %>% 
-  filter(!is.na(bvdid),  between(year, 2000, 2018)) %>% 
-  ungroup()%>%
+
+```{r, results="hide"}
+var_between_within<-  "\\label{fig:betweenwithin}The figure plots the evolution in time of corporate portfolio risk-weights of Canadian banks (grey solid lines) and French banks (black dashed lines)."
+
+```
+```{r, warning=FALSE, message=FALSE, fig.cap = var_between_within, fig.align = 'center'}
+ loan.data %>% 
+  filter(bvdid %in% pillar3.data$bvdid,  between(year, 2001, 2018), country_code_lender %in% c("FR", "CA")) %>% 
   distinct(bvdid, year, .keep_all = TRUE)%>%
   group_by(bvdid) %>%
   mutate(aux.year = sum(year))%>%
-  filter(aux.year == sum(seq(2000,2018,1)))
-
-aux1  = "FR"
-aux2 = "CA"
-aux3 = ""
-aux.data %>%
-  ggplot(mapping = aes(y = RW, x = year)) +
-  geom_line(data = filter(aux.data, country_code_lender == aux1 ), 
-            color = "black", linetype = 5, size = 1, aes(group = bank_name))+
-  geom_line(data = filter(aux.data, country_code_lender == aux2 ), 
-            color = "gray50", linetype = 1, size = 1, aes(group = bank_name))+
-#  geom_line(data = filter(aux.data, country_code_lender == aux3 ), 
-#            color = "black", linetype = 2, size = 1, aes(group = bank_name))+
-  theme_bw()+
+  filter(aux.year == sum(seq(2001,2018,1))) %>%
+  ggplot(mapping = aes(y = RW, x = year, linetype = country_code_lender, color = country_code_lender,
+                       group = interaction(country_code_lender, bank_name))) +
+  geom_line()+
+ theme_bw()+
+  scale_color_manual(labels = c("Canada", "France"), values=c("gray50","black"))+
+  scale_linetype_manual(labels = c("Canada", "France"), values=c("solid", "longdash"))+
 #scale_y_continuous(expand = c(0,0)) +
    scale_x_continuous(expand = c(0,0)) +
   theme(
+    legend.title = element_blank(),
+    legend.background = element_blank(),
+    legend.position = c(0.15,0.15),
     plot.background = element_blank(),
   #  panel.grid.major = element_blank(),
     panel.grid.minor = element_blank()
@@ -203,269 +284,181 @@ aux.data %>%
 
 ```
 
-```{r intro_by_year, warning=FALSE, message=FALSE}
+
+```{r, results="hide"}
+intro_by_year <-  "\\label{fig:introyear}The figure plots the distribution in time of the introduction of the IRB approach for corporate portfolios."
+
+```
+
+```{r, warning=FALSE, message=FALSE, fig.cap = intro_by_year, fig.align = 'center'}
+
 aux.data %>% 
-  select(bvdid, bank_name, year, IRB) %>%
-  arrange(bvdid, year) %>%
-  mutate(change = IRB - lag(IRB)) %>%
+  select(bvdid, bank_name, year, IRB, change) %>%
   filter(change == 1) %>%
    ggplot( mapping = aes(x = as.factor(year))) +
-  geom_bar() +
+  geom_bar(fill="grey", color="black") +
   theme_bw()+
 #scale_y_continuous(expand = c(0,0)) +
  #  scale_x_continuous(expand = c(0,0)) +
   theme(
+    axis.title.y=element_blank(),
     plot.background = element_blank(),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank()
-  ) 
+  )  +
+  labs(x = "Year")
 ```
 
-```{r t_intro_within}
-aux.data <- loan.data %>% 
-  filter(!is.na(bvdid),  between(year, 2000, 2018)) %>% 
-  ungroup()%>%
+```{r, results="hide"}
+intro_within<-  "\\label{fig:introwithin}The figure plots the evolution in time of corporate portfolio risk-weights of Italian banks. "
+
+```
+```{r, warning=FALSE, message=FALSE, fig.cap = intro_within, fig.align = 'center'}
+ loan.data %>% 
+  filter(bvdid %in% pillar3.data$bvdid,  between(year, 2001, 2018), country_code_lender %in% c("IT")) %>% 
   distinct(bvdid, year, .keep_all = TRUE)%>%
   group_by(bvdid) %>%
   mutate(aux.year = sum(year))%>%
-  filter(aux.year == sum(seq(2000,2018,1)))
-
-aux1  = "IT"
-aux2 = ""
-aux3 = ""
-aux.data %>%
-  ggplot(mapping = aes(y = RW, x = year)) +
-  geom_line(data = filter(aux.data, country_code_lender == aux1 ), 
-            color = "black", linetype = 1, size = 1, aes(group = bank_name))+
-  geom_line(data = filter(aux.data, country_code_lender == aux2 ), 
-            color = "gray50", linetype = 1, size = 1, aes(group = bank_name))+
-#  geom_line(data = filter(aux.data, country_code_lender == aux3 ), 
-#            color = "black", linetype = 2, size = 1, aes(group = bank_name))+
-  theme_bw()+
-#scale_y_continuous(expand = c(0,0)) +
+  filter(aux.year == sum(seq(2001,2018,1))) %>%
+  ggplot(mapping = aes(y = RW, x = year, linetype = bank_name, color = bank_name, 
+                       group = interaction(country_code_lender, bank_name))) +
+  geom_line(
+   # size = 1
+    )+
+ theme_bw()+
+  scale_color_grey(start = 0, end = 0.6)+
    scale_x_continuous(expand = c(0,0)) +
   theme(
+    legend.title = element_blank(),
+    legend.background = element_blank(),
+    legend.position = c(0.15,0.2),
     plot.background = element_blank(),
   #  panel.grid.major = element_blank(),
     panel.grid.minor = element_blank()
-  ) 
+  ) +
+  labs(x = "Year")
 
 ```
 
+```{r, results="hide"}
+intro_between<-  "\\label{fig:introbetween}The figure plots the evolution in time of corporate portfolio risk-weights of German banks (grey solid lines) and American banks (black dashed lines)."
 
+```
+```{r, warning=FALSE, message=FALSE, fig.cap = intro_between, fig.align = 'center'}
 
-
-```{r t_intro_between}
-aux.data <- loan.data %>% 
-  filter(!is.na(bvdid),  between(year, 2000, 2018)) %>% 
-  ungroup()%>%
+ loan.data %>% 
+  filter(bvdid %in% pillar3.data$bvdid,  between(year, 2001, 2018), country_code_lender %in% c("US", "DE")) %>% 
   distinct(bvdid, year, .keep_all = TRUE)%>%
   group_by(bvdid) %>%
   mutate(aux.year = sum(year))%>%
-  filter(aux.year == sum(seq(2000,2018,1)))
-
-aux1  = "US"
-aux2 = "DE"
-aux3 = ""
-aux.data %>%
-  ggplot(mapping = aes(y = RW, x = year)) +
-  geom_line(data = filter(aux.data, country_code_lender == aux1 ), 
-            color = "black", linetype = 5, size = 1, aes(group = bank_name))+
-  geom_line(data = filter(aux.data, country_code_lender == aux2 ), 
-            color = "gray50", linetype = 1, size = 1, aes(group = bank_name))+
-#  geom_line(data = filter(aux.data, country_code_lender == aux3 ), 
-#            color = "black", linetype = 2, size = 1, aes(group = bank_name))+
-  theme_bw()+
+  filter(aux.year == sum(seq(2001,2018,1))) %>%
+  ggplot(mapping = aes(y = RW, x = year, linetype = country_code_lender, color = country_code_lender,
+                       group = interaction(country_code_lender, bank_name))) +
+  geom_line()+
+ theme_bw()+
+  scale_color_manual(labels = c("Germany", "United States"), values=c("gray50","black"))+
+  scale_linetype_manual(labels = c("Germany", "United States"), values=c("solid", "longdash"))+
 #scale_y_continuous(expand = c(0,0)) +
    scale_x_continuous(expand = c(0,0)) +
   theme(
+    legend.title = element_blank(),
+    legend.background = element_blank(),
+    legend.position =  c(0.15,0.15),
     plot.background = element_blank(),
   #  panel.grid.major = element_blank(),
     panel.grid.minor = element_blank()
-  ) 
+  ) +
+  labs(x = "Year")
 
 ```
 
+```{r, results="hide"}
+data_trend <-  "\\label{fig:trend}The figure plots the evolution in time of corporate portfolio risk-weights of Swiss banks (grey solid lines) and Swedish banks (black dashed lines)."
 
-
-
-```{r data_trend}
-aux.data <- loan.data %>% 
-  filter(!is.na(bvdid),  between(year, 2000, 2018)) %>% 
-  ungroup()%>%
+```
+```{r, warning=FALSE, message=FALSE, fig.cap = data_trend, fig.align = 'center'}
+ loan.data %>% 
+  filter(bvdid %in% pillar3.data$bvdid,  between(year, 2001, 2018), country_code_lender %in% c("CH", "SE")) %>% 
   distinct(bvdid, year, .keep_all = TRUE)%>%
   group_by(bvdid) %>%
   mutate(aux.year = sum(year))%>%
-  filter(aux.year == sum(seq(2000,2018,1)))
-
-aux1  = "CH"
-aux2 = "SE"
-aux3 = ""
-aux.data %>%
-  ggplot(mapping = aes(y = RW, x = year)) +
-  geom_line(data = filter(aux.data, country_code_lender == aux1 ), 
-            color = "black", linetype = 5, size = 1, aes(group = bank_name))+
-  geom_line(data = filter(aux.data, country_code_lender == aux2 ), 
-            color = "gray50", linetype = 1, size = 1, aes(group = bank_name))+
-#  geom_line(data = filter(aux.data, country_code_lender == aux3 ), 
-#            color = "black", linetype = 2, size = 1, aes(group = bank_name))+
-  theme_bw()+
+  filter(aux.year == sum(seq(2001,2018,1))) %>%
+  ggplot(mapping = aes(y = RW, x = year, linetype = country_code_lender, color = country_code_lender,
+                       group = interaction(country_code_lender, bank_name))) +
+  geom_line()+
+ theme_bw()+
+  scale_color_manual(labels = c("Switzerland", "Sweden"), values=c("gray50","black"))+
+  scale_linetype_manual(labels = c("Switzerland", "Sweden"), values=c("solid", "longdash"))+
 #scale_y_continuous(expand = c(0,0)) +
    scale_x_continuous(expand = c(0,0)) +
   theme(
+    legend.title = element_blank(),
+    legend.background = element_blank(),
+    legend.position =  c(0.15,0.15),
     plot.background = element_blank(),
   #  panel.grid.major = element_blank(),
     panel.grid.minor = element_blank()
-  ) 
+  ) +
+  labs(x = "Year")
 
 ```
 
 
-```{r lender_country_total_amount, warning=FALSE, message=FALSE}
-aux.data <- loan.data %>% 
-  filter(!is.na(bvdid)) %>%
-  group_by(country_code_lender, year)%>%
-  summarise(lender_amount = sum(lender_amount, na.rm = TRUE)/1000)
+\newpage
 
-country.aux1  = "US"
-country.aux2  = "GB"
-aux.data %>%
- ggplot(data = filter(aux.data, country_code_lender != country.aux1, country_code_lender != country.aux2), 
-        mapping = aes(x = year, y = lender_amount)) +
-  geom_line(color = "gray70", aes(group = country_code_lender)) +
-  geom_line(data = filter(aux.data, country_code_lender == country.aux1 ),
-            color = "black", linetype = 1, size = 1)+
-  geom_line(data = filter(aux.data, country_code_lender == country.aux2 ),
-            color = "black", linetype = 2, size = 1)+
-    theme_bw()+
-#scale_y_continuous(expand = c(0,0)) +
-   scale_x_continuous(expand = c(0,0)) +
-  theme(
-    plot.background = element_blank(),
-  #  panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank()
-  ) 
-
-```
-
-
-
-```{r lender_country_cross_amount, warning=FALSE, message=FALSE}
-aux.data <- loan.data %>% 
-  filter(!is.na(bvdid), country_name_borrower != country_name) %>%
-  group_by(country_code_lender, year)%>%
-  summarise(lender_amount = sum(lender_amount, na.rm = TRUE)/1000)
-
-country.aux1  = "US"
-country.aux2  = "GB"
-aux.data %>%
- ggplot(data = filter(aux.data, country_code_lender != country.aux1, country_code_lender != country.aux2), 
-        mapping = aes(x = year, y = lender_amount)) +
-  geom_line(color = "gray70", aes(group = country_code_lender)) +
-  geom_line(data = filter(aux.data, country_code_lender == country.aux1 ),
-            color = "black", linetype = 1, size = 1)+
-  geom_line(data = filter(aux.data, country_code_lender == country.aux2 ),
-            color = "black", linetype = 2, size = 1)+
-    theme_bw()+
-#scale_y_continuous(expand = c(0,0)) +
-   scale_x_continuous(expand = c(0,0)) +
-  theme(
-    plot.background = element_blank(),
-  #  panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank()
-  ) 
-
-```
-```{r borrower_country_total_amount, warning=FALSE, message=FALSE}
-aux.data <- loan.data %>% 
-  filter(!is.na(bvdid)) %>%
-  group_by(country_name_borrower, year)%>%
-  summarise(lender_amount = sum(lender_amount, na.rm = TRUE)/1000)
-
-country.aux1  = "United States"
-country.aux2  = "United Kingdom"
-aux.data %>%
-  ggplot(data = filter(aux.data, country_name_borrower != country.aux1, country_name_borrower != country.aux2), 
-         mapping = aes(y = lender_amount, x = year)) +
-  geom_line(color = "gray70", aes(group = country_name_borrower)) +
-  geom_line(data = filter(aux.data, country_name_borrower == country.aux1 ), 
-            color = "black", linetype = 1, size = 1.1)+
-  geom_line(data = filter(aux.data, country_name_borrower == country.aux2 ), 
-            color = "black", linetype = 2, size = 1.1)+
-    theme_bw()+
-#scale_y_continuous(expand = c(0,0)) +
-   scale_x_continuous(expand = c(0,0)) +
-  theme(
-    plot.background = element_blank(),
-  #  panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank()
-  ) 
-
-```
-
-
-
-```{r borrower_country_cross_amount, warning=FALSE, message=FALSE}
-aux.data <- loan.data %>% 
-  filter(!is.na(bvdid), country_name_borrower != country_name) %>%
-  group_by(country_name_borrower, year)%>%
-  summarise(lender_amount = sum(lender_amount, na.rm = TRUE)/1000)
-
-country.aux1  = "United States"
-country.aux2  = "United Kingdom"
-aux.data %>%
-  ggplot(data = filter(aux.data, country_name_borrower != country.aux1, country_name_borrower != country.aux2), 
-         mapping = aes(y = lender_amount, x = year)) +
-  geom_line(color = "gray70", aes(group = country_name_borrower)) +
-  geom_line(data = filter(aux.data, country_name_borrower == country.aux1 ), 
-            color = "black", linetype = 1, size = 1.1)+
-  geom_line(data = filter(aux.data, country_name_borrower == country.aux2 ), 
-            color = "black", linetype = 2, size = 1.1)+
-    theme_bw()+
-#scale_y_continuous(expand = c(0,0)) +
-   scale_x_continuous(expand = c(0,0)) +
-  theme(
-    plot.background = element_blank(),
-  #  panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank()
-  ) 
-
-```
-\section{Sample} \label{sec:sample}
-
-\begin{itemize}
-\item Loans are assigned to parent bank
-\item Only banks we collected RW information
-\item From 1995 to 2018
-\item Only cross-border loans are included
-\end{itemize}
+# Tables {-}
 
 \begin{table}[!htbp] \centering  
 \caption{Summary Statistics}  
 \label{tab:summary}
 \footnotesize
 \begin{tabular}{@{\extracolsep{1pt}}lccccc}
-\multicolumn{6}{c}{\parbox[t]{13.5cm}{The table shows summary statistics for banks that have introduced the IRB approach between 1995 and 2018. All variables are winsorized at 0.1\%}} \\
+\multicolumn{6}{c}{\parbox[t]{12.8cm}{The table shows summary statistics. The sample covers cross-border loan-level observations for 59 IRB banks and 15 OECD countries over the period 2001–2018. All variables are winsorized at 1\% and 99\%}} \\
 \end{tabular}
 
 ```{r summary1, eval=TRUE, fig.height = 10, fig.width = 7, results="asis",out.width = "1\\textwidth"}
 loan.data %>%
-        filter(year>1994, country_name_borrower != country_name) %>% 
+        filter(year > 2000, country_name_borrower != country_name) %>% 
+  arrange(mean.RW_with_SA)%>%
   select(
+  lender_amount_musd,
   log.lender_amount,
   RW,
   basel,
-  mean.RW) %>%
+  mean.RW_with_SA,
+  gdp_growth,
+  policy_rate,
+  asset_share.gdp,
+  capital.ratio,
+  log.asset,
+  ROE,
+  deposit.ratio,
+  loans.ratio,
+  NII.ratio,
+  NPL.ratio,
+  subordinated) %>%
+  #filter(across(where(is.numeric), ~ !is.na(.x))) %>%
   as.data.frame() %>% 
 stargazer(header = FALSE, type="latex", single.row = TRUE, column.sep.width = "1pt", font.size = "footnotesize",
           label = "tab:summary",
           omit.summary.stat = c("p25","p75"),
           covariate.labels = 
-            c("\\hspace{0.0cm}$\\text{Log loan}_{l,i}$",
+            c("\\hspace{0.0cm}$\\text{Loan}_{l,i}$",
+              "\\hspace{0.0cm}$\\text{Log loan}_{l,i}$",
               "\\hspace{0.0cm}$\\text{RW}_{i,t}$",
               "\\hspace{0.0cm}$\\text{Basel II}_{c,t}$",
-              "\\hspace{0.0cm}$\\overline{\\text{RW}}_{c,t}$"
-              ),
+              "\\hspace{0.0cm}$\\overline{\\text{RW}}_{c,-i,t}$",
+              "\\hspace{0.0cm}$\\text{GDP growth rate}_{c,t}$",
+              "\\hspace{0.0cm}$\\text{Policy rate}_{c,t}$",
+              "\\hspace{0.0cm}$\\text{Assets to GDP}_{c,t}$",
+              "\\hspace{0.0cm}$\\text{Capital ratio}_{i,t}$",
+              "\\hspace{0.0cm}$\\text{Log assets}_{i,t}$",
+              "\\hspace{0.0cm}$\\text{ROE}_{i,t}$",
+              "\\hspace{0.0cm}$\\text{Deposit ratio}_{i,t}$",
+              "\\hspace{0.0cm}$\\text{Loans ratio}_{i,t}$",
+              "\\hspace{0.0cm}$\\text{NII ratio}_{i,t}$",
+              "\\hspace{0.0cm}$\\text{NPL ratio}_{i,t}$",
+              "\\hspace{0.0cm}$\\text{Subordinated debt}_{c,t}$"),
           notes.label = "",
           notes.align = "c", 
           notes.append = FALSE,
@@ -479,72 +472,92 @@ stargazer(header = FALSE, type="latex", single.row = TRUE, column.sep.width = "1
 \end{table}
 
 
-
-
-
-
-```{r regressions, echo=FALSE}
+```{r benchmark_regressions, echo=FALSE}
 
 # Run the models
 reg.list <- list()
 se.list <- list()
-reg.list[[1]] <- felm(log.lender_amount ~ RW  | as.factor(bvdid) + tranche_id | 0 | 0,
-                      data = filter(loan.data, country_name_borrower != country_name, year > 1994))
+F.test <- c()
+
+reg.list[[1]] <- felm(log.lender_amount ~ RW + gdp_growth +policy_rate+ log.asset + capital.ratio + ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated
+                      | as.factor(bvdid) + tranche_id  | 0 | tranche_id,
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000,
+                                    !is.na(mean.RW_with_SA)))
 se.list[[1]]  <- summary(reg.list[[1]], robust = TRUE)$coefficients[,2]
 
-
-reg.list[[3]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid) + tranche_id| (RW ~ basel) | 0,
-                      data = filter(loan.data, country_name_borrower != country_name, year > 1994))
+reg.list[[3]] <- felm(log.lender_amount ~  gdp_growth+policy_rate+log.asset + capital.ratio + ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated
+                      | as.factor(bvdid) +  tranche_id | (RW ~ basel) | tranche_id,
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000,
+                                    !is.na(mean.RW_with_SA)))
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`RW(fit)`']<-'RW'
 se.list[[3]]  <- summary(reg.list[[3]], robust = TRUE)$coefficients[,2]
 
 reg.list[[2]] <- reg.list[[3]]$stage1
 se.list[[2]]  <- summary(reg.list[[2]], robust = TRUE)$coefficients[,2]
+F.test[2]<-round(summary(reg.list[[2]])$iv1fstat["F"],1)
 
-reg.list[[5]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid)  + tranche_id | (RW ~ mean.RW_adj ) | 0,
-                      data = filter(loan.data, country_name_borrower != country_name, year > 1994))
+reg.list[[5]] <- felm(log.lender_amount ~  gdp_growth+policy_rate+log.asset + capital.ratio + ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated
+                      | as.factor(bvdid) +  tranche_id  | (RW ~ mean.RW_with_SA) | tranche_id,
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[5]]$coefficients)[rownames(reg.list[[5]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[5]]$beta)[rownames(reg.list[[5]]$beta)=='`RW(fit)`']<-'RW'
 se.list[[5]]  <- summary(reg.list[[5]], robust = TRUE)$coefficients[,2]
+
 
 reg.list[[4]] <- reg.list[[5]]$stage1
 se.list[[4]]  <- summary(reg.list[[4]], robust = TRUE)$coefficients[,2]
+F.test[4]<-round(summary(reg.list[[4]])$iv1fstat["F"],1)
 
-
-reg.list[[7]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid)  + tranche_id | (RW ~ basel + mean.RW_adj ) | 0,
-                      data = filter(loan.data, country_name_borrower != country_name, year > 1994))
+reg.list[[7]] <- felm(log.lender_amount ~  gdp_growth+ policy_rate+ log.asset + capital.ratio + ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated
+                      | as.factor(bvdid) + tranche_id | (RW ~ basel + mean.RW_with_SA) | tranche_id ,
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[7]]$coefficients)[rownames(reg.list[[7]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[7]]$beta)[rownames(reg.list[[7]]$beta)=='`RW(fit)`']<-'RW'
 se.list[[7]]  <- summary(reg.list[[7]], robust = TRUE)$coefficients[,2]
 
 
 reg.list[[6]] <- reg.list[[7]]$stage1
 se.list[[6]]  <- summary(reg.list[[6]], robust = TRUE)$coefficients[,2]
+F.test[6]<-round(summary(reg.list[[6]])$iv1fstat["F"],1)
 
 
 ```
 
-```{r tables_aux, echo=FALSE}
+
+```{r benchmark_aux, echo=FALSE}
 
 # Dependent variables
 dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
 
 # Independent variables
-ind.text <- c("$\\text{RW}_{i,t}$", "$\\text{Basel II}_{c,t}$", "$\\widehat{\\text{RW}}_{c,t}$", "$\\overline{\\text{RW}}_{c,t}$")
+ind.text <- c("$\\text{RW}_{i,t}$", "$\\text{Basel II}_{c,t}$", "$\\overline{\\text{RW}}_{c,-i,t}$",
+              "$\\text{GDP growth rate}_{c,t}$", 
+              "$\\text{Policy rate}_{c,t}$",
+              "$\\text{Log asset}_{i,t}$",
+              "$\\text{Capital ratio}_{i,t}$", "$\\text{ROE}_{i,t}$", "$\\text{Deposit ratio}_{i,t}$",
+              "$\\text{Loans ratio}_{i,t}$", "$\\text{Net interest income}_{i,t}$", "$\\text{NPL ratio}_{i,t}$",
+              "$\\text{Subordinated debt}_{i,t}$")
 
 fe.list <- list(c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
-                c("Bank $\\times$ year FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))))
+                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("F-value (1st stage)",    F.test))
 
 ```
 
-```{r table_regression, eval=TRUE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+```{r benchmark_table, eval=TRUE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
 stargazer(reg.list,
-          title = "Results",
+          title = "Risk-weights and Corporate Lending",
           table.layout = "n=c=d#-t-as-",
-          notes = "\\parbox[t]{14cm}{The table shows the effect of risk-weights on corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a facility. The independent variable is the average risk-weight of the bank's corporate portfolio in the year that the facility was issued. All regressions include facility and bank fixed effects. Robust standard errors are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          notes = "\\parbox[t]{19cm}{The table shows the effect of risk-weights on corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a loan. The main independent variable is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. All regressions include loan and bank fixed effects. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
           dep.var.labels   = dep.text,
           covariate.labels = ind.text,
+          order           = c(1, 12, 13, seq(2,11)),
           add.lines        = fe.list,
-          se               = se.list,
-          keep.stat        = c("n","rsq"),
+          #se               = se.list,
+          keep.stat        = c("n","adj.rsq"),
           header           = FALSE, 
-          type             = "latex",
-          font.size        = "footnotesize",
+          font.size        = "scriptsize",
           notes.label      = "",
           notes.align      = "c", 
           notes.append     = FALSE,
@@ -552,36 +565,663 @@ stargazer(reg.list,
           style            = "qje",
           column.sep.width = "-1.0pt",
           align            = TRUE,
-          float.env        = "sidewaystable")
+          #no.space        = TRUE,
+          column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
+          column.separate  = c(1,2,2,2),
+          float.env        = "sidewaystable",
+          type             = "latex"
+  )
+```
+```{r benchmark_regressionsvs2, echo=FALSE}
+
+ #gdp_growth+policy_rate+log.asset + capital.ratio + ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated
+# Run the models
+reg.list <- list()
+se.list <- list()
+F.test <- c()
+
+reg.list[[1]] <- felm(log.lender_amount ~ RW 
+                      | as.factor(bvdid) + tranche_id  | 0 | tranche_id,
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
+
+reg.list[[3]] <- felm(log.lender_amount ~  1
+                      | as.factor(bvdid) +  tranche_id | (RW ~ basel) | tranche_id,
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`RW(fit)`']<-'RW'
+
+reg.list[[2]] <- reg.list[[3]]$stage1
+F.test[2]<-round(summary(reg.list[[2]])$iv1fstat["F"],1)
+
+reg.list[[4]] <- felm(log.lender_amount ~ RW +gdp_growth+policy_rate+log.asset +capital.ratio + ROA
+                        + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated 
+                      | as.factor(bvdid) + tranche_id  | 0 | tranche_id,
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
+
+reg.list[[5]] <- felm(log.lender_amount ~  +gdp_growth+policy_rate+log.asset +capital.ratio + ROA
+                        + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated 
+                      | as.factor(bvdid) +  tranche_id | (RW ~ basel) | tranche_id,
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[5]]$coefficients)[rownames(reg.list[[5]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[5]]$beta)[rownames(reg.list[[5]]$beta)=='`RW(fit)`']<-'RW'
+
 ```
 
-```{r regressions2, echo=FALSE}
+
+```{r benchmark_auxvs2, echo=FALSE}
+
+# Dependent variables
+dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+
+# Independent variables
+ind.text <- c("$\\text{RW}_{i,t}$", "$\\text{Basel II}_{c,t}$")
+
+fe.list <- list(c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("F-value (1st stage)",    F.test))
+
+```
+
+```{r benchmark_tablevs2, eval=TRUE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+stargazer(reg.list,
+          title = "Risk-weights and Corporate Lending",
+          table.layout = "n=c=d#-t-as-",
+          notes = "\\parbox[t]{19cm}{The table shows the effect of risk-weights on corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a loan. The main independent variable is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. All regressions include loan and bank fixed effects. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          dep.var.labels   = dep.text,
+          covariate.labels = ind.text,
+          #order           = c(1, 12, 13, seq(2,11)),
+          add.lines        = fe.list,
+          #se               = se.list,
+          keep.stat        = c("n","adj.rsq"),
+          header           = FALSE, 
+          font.size        = "scriptsize",
+          notes.label      = "",
+          notes.align      = "c", 
+          notes.append     = FALSE,
+          label            = "tab:main",
+          style            = "qje",
+          column.sep.width = "-1.0pt",
+          align            = TRUE,
+          #no.space        = TRUE,
+          column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
+          column.separate  = c(1,2,2,2),
+          float.env        = "sidewaystable",
+          type             = "latex"
+  )
+```
+
+```{r bank_regressionsv2, echo=FALSE}
 
 # Run the models
 reg.list <- list()
 se.list <- list()
-reg.list[[1]] <- felm(log.lender_amount ~ RW  | as.factor(bvdid) + tranche_id | 0 | 0,
+F.test.RW <- c()
+F.test.aux1 <- c()
+F.test.aux2 <- c()
+F.test.aux3 <- c()
+
+reg.list[[1]] <- felm(log.lender_amount ~ RW + ROA+aux + NPL.ratio + subordinated + log.asset 
+                      + gdp_growth + policy_rate+ capital.ratio + deposit.ratio + loans.ratio + NII.ratio  | as.factor(bvdid)  + tranche_id  |0 | tranche_id,
+                      data = filter(mutate(loan.data,       
+                                    ROA = ifelse(ROA < 0,1,0),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*ROA), 
+                                    country_name_borrower != country_name, year > 2000))
+
+
+
+reg.list[[2]] <- felm(log.lender_amount ~ ROA + NPL.ratio + subordinated + log.asset 
+                      + gdp_growth + policy_rate+ capital.ratio + deposit.ratio + loans.ratio + NII.ratio | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~basel + basel:ROA) | tranche_id,
+                      data = filter(mutate(loan.data,
+                                    ROA = ifelse(ROA < 0,1,0),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*ROA), 
+                                    country_name_borrower != country_name, year > 2000))
+F.test.RW[2]<-round(reg.list[[2]]$stage1$iv1fstat$RW["F"],1)
+F.test.aux1[2]<-round(reg.list[[2]]$stage1$iv1fstat$aux["F"],1)
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`aux(fit)`']<-'aux'
+
+
+```
+
+
+```{r bank_auxv2, echo=FALSE}
+
+# Dependent variables
+dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+
+# Independent variables
+ind.text <- c(  "$\\text{RW}_{i,t}$", "$\\text{ROA}_{i,t}$", "$\\text{RW}_{i,t} \\times \\text{ROA}_{i,t}$")
+
+fe.list <- list(c("Controls",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("F-value (1st stage on RW)", F.test.RW))
+
+```
+
+```{r bank_tablev2, eval=TRUE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+stargazer(reg.list,
+          title = "Balance sheet composition, risk-weights and lending",
+          table.layout = "n=c=d#-t-as-",
+          notes = "\\parbox[t]{11cm}{The table shows that the effect depends the profitability, the quality of the assets and the funding structure. The dependent variable is the logarithm of the amount lent by the bank in a loan. The main independent variable is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. All regressions are IV that have the introduction of Basel II and the country average risk-weight as instruments. All regressions include loan and bank fixed effects. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          dep.var.labels   = dep.text,
+          #covariate.labels = ind.text,
+          #order            = c(11, 1, 2, 3, 12, 13, 14, seq(4,10)),
+          keep             = c(1, 2, 3),
+          add.lines        = fe.list,
+          #se               = se.list,
+          keep.stat        = c("n","adj.rsq"),
+          header           = FALSE, 
+          font.size        = "scriptsize",
+          notes.label      = "",
+          notes.align      = "c", 
+          notes.append     = FALSE,
+          label            = "tab:main",
+          style            = "qje",
+          column.sep.width = "-1.0pt",
+          align            = TRUE,
+          #no.space        = TRUE,
+          #column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
+          #column.separate  = c(1,1,1,1),
+          float.env        = "sidewaystable",
+          type             = "latex"
+  )
+```
+
+
+```{r regulation_regressions, echo=FALSE}
+
+# Run the models
+reg.list <- list()
+se.list <- list()
+
+reg.list[[1]] <- felm(log.lender_amount ~ capital.ratio
+                      + gdp_growth + policy_rate+ log.asset +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux1 ~ mean.RW_with_SA + mean.RW_with_SA:capital.ratio +
+                                    basel + basel:capital.ratio ) | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    mean.RW_with_SA = mean.RW_with_SA - mean(mean.RW_with_SA, na.rm = TRUE),       
+                                    capital.ratio = capital.ratio - mean(capital.ratio, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux1 = RW*capital.ratio), 
+                                    country_name_borrower != country_name, year > 2000))
+
+reg.list[[2]] <- felm(log.lender_amount ~ capital.ratio +  sup_power +
+                      + gdp_growth + policy_rate+ log.asset +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux2 ~ mean.RW_with_SA + mean.RW_with_SA:sup_power +
+                                    basel + basel:sup_power ) | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    mean.RW_with_SA = mean.RW_with_SA - mean(mean.RW_with_SA, na.rm = TRUE),       
+                                    sup_power = sup_power - mean(sup_power, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux2 = RW*sup_power), 
+                                    country_name_borrower != country_name, year > 2000))
+
+
+reg.list[[3]] <- felm(log.lender_amount ~ capital.ratio + cap_reg + capital.ratio:cap_reg +
+                      + gdp_growth + policy_rate+ log.asset +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux1 | aux2 | aux3 ~ mean.RW_with_SA + basel 
+                                                 + mean.RW_with_SA:capital.ratio + mean.RW_with_SA:cap_reg
+                                                 + basel:capital.ratio + basel:cap_reg +
+                                                 + mean.RW_with_SA:capital.ratio:cap_reg
+                                                 + basel:capital.ratio:cap_reg) | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    mean.RW_with_SA = mean.RW_with_SA - mean(mean.RW_with_SA, na.rm = TRUE),       
+                                    capital.ratio = capital.ratio - mean(capital.ratio, na.rm = TRUE),
+                                    cap_reg = cap_reg - mean(cap_reg, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux1 = RW*capital.ratio,
+                                    aux2 = RW*cap_reg,
+                                    aux3 = RW*capital.ratio*cap_reg), 
+                                    country_name_borrower != country_name, year > 2000))
+
+
+```
+
+
+```{r regulation_aux, echo=FALSE}
+
+# Dependent variables
+dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+
+# Independent variables
+ind.text <- c( "$\\text{Capital ratio}_{i,t}$", "$\\text{Capital stringency}_{c,t}$", "$\\text{Capital ratio}_{i,t} \\times \\text{Capital stringency}_{c,t}$", "$\\text{RW}_{i,t}$", "$\\text{RW}_{i,t} \\times \\text{Capital ratio}_{i,t}$", "$\\text{RW}_{i,t} \\times \\text{Capital stringency}_{c,t}$", "$\\text{RW}_{i,t} \\times \\text{Capital ratio}_{i,t} \\times \\text{Capital stringency}_{c,t}$")
+
+fe.list <- list(c("Controls",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))))
+
+```
+
+```{r regulation_table, eval=TRUE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+stargazer(reg.list,
+          title = "The role of capital regulation stringency",
+          table.layout = "n=c=d#-t-as-",
+          notes = "\\parbox[t]{14cm}{The table shows that the effect depends on the level of capitalization and, mostly, on how strong is capital regulation. The dependent variable is the logarithm of the amount lent by the bank in a loan. The main independent variable is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. All regressions are IV that have the introduction of Basel II and the country average risk-weight as instruments. All regressions include loan and bank fixed effects. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          dep.var.labels   = dep.text,
+          #covariate.labels = ind.text,
+         # order            = c(13, 1, 2, 14, 12, 15, 16),
+          #keep             = c( 1, 2,  12,13, 14, 15, 16), 
+          add.lines        = fe.list,
+          #se               = se.list,
+          keep.stat        = c("n","adj.rsq"),
+          header           = FALSE, 
+          font.size        = "scriptsize",
+          notes.label      = "",
+          notes.align      = "c", 
+          notes.append     = FALSE,
+          label            = "tab:main",
+          style            = "qje",
+          column.sep.width = "-1.0pt",
+          align            = TRUE,
+          #no.space        = TRUE,
+         # column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
+          #column.separate  = c(1,1,1,1),
+          float.env        = "sidewaystable",
+          type             = "latex"
+  )
+```
+
+
+
+
+```{r size_regressions, echo=FALSE}
+
+# Run the models
+reg.list <- list()
+se.list <- list()
+F.test.RW <- c()
+F.test.aux1 <- c()
+F.test.aux2 <- c()
+F.test.aux3 <- c()
+
+reg.list[[1]] <- felm(log.lender_amount ~ log.asset 
+                      + gdp_growth + policy_rate+ capital.ratio +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux1 ~ mean.RW_with_SA + mean.RW_with_SA:log.asset +
+                                    basel + basel:log.asset) | tranche_id,
+                      data = filter(mutate(loan.data,
+                                    mean.RW_with_SA = mean.RW_with_SA - mean(mean.RW_with_SA, na.rm = TRUE),       
+                                    log.asset = log.asset - mean(log.asset, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux1 = RW*log.asset), 
+                                    country_name_borrower != country_name, year > 2000))
+
+F.test.RW[1]<-round(reg.list[[1]]$stage1$iv1fstat$RW["F"],1)
+F.test.aux1[1]<-round(reg.list[[1]]$stage1$iv1fstat$aux1["F"],1)
+
+
+reg.list[[2]] <- felm(log.lender_amount ~ log.asset 
+                      + gdp_growth + policy_rate+ capital.ratio +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated + log.asset_sq   | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux1 | aux2 ~ mean.RW_with_SA + basel 
+                           + mean.RW_with_SA:log.asset + mean.RW_with_SA:log.asset_sq
+                           + basel:log.asset + basel:log.asset_sq ) | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    mean.RW_with_SA = mean.RW_with_SA - mean(mean.RW_with_SA, na.rm = TRUE),       
+                                    log.asset = log.asset - mean(log.asset, na.rm = TRUE),
+                                    log.asset_sq = log.asset^2 - mean(log.asset^2, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux1 = RW*log.asset,
+                                    aux2 = RW*log.asset_sq), 
+                                    country_name_borrower != country_name, year > 2000))
+F.test.RW[2]<-round(reg.list[[2]]$stage1$iv1fstat$RW["F"],1)
+F.test.aux1[2]<-round(reg.list[[2]]$stage1$iv1fstat$aux1["F"],1)
+F.test.aux2[2]<-round(reg.list[[2]]$stage1$iv1fstat$aux2["F"],1)
+
+
+reg.list[[3]] <- felm(log.lender_amount ~ log.asset 
+                      + gdp_growth + policy_rate+ capital.ratio +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated + asset_share.gdp| as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux3 ~ mean.RW_with_SA + mean.RW_with_SA:asset_share.gdp +
+                                    basel + basel:asset_share.gdp) | tranche_id,
+                      data = filter(mutate(loan.data,
+                                    mean.RW_with_SA = mean.RW_with_SA - mean(mean.RW_with_SA, na.rm = TRUE),
+                                    asset_share.gdp = asset_share.gdp - mean(asset_share.gdp, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux3 = RW*asset_share.gdp), 
+                                    country_name_borrower != country_name, year > 2000))
+F.test.RW[3]<-round(reg.list[[3]]$stage1$iv1fstat$RW["F"],1)
+F.test.aux1[3]<-round(reg.list[[3]]$stage1$iv1fstat$aux3["F"],1)
+
+reg.list[[4]] <- felm(log.lender_amount ~ log.asset 
+                      + gdp_growth + policy_rate+ capital.ratio +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated + asset_share.gdp + log.asset:asset_share.gdp| as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux1 | aux3 | aux4 ~ mean.RW_with_SA + basel 
+                                                 + mean.RW_with_SA:log.asset + mean.RW_with_SA:asset_share.gdp
+                                                 + basel:log.asset + basel:asset_share.gdp +
+                                                 + mean.RW_with_SA:log.asset:asset_share.gdp
+                                                 + basel:log.asset:asset_share.gdp) | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    mean.RW_with_SA = mean.RW_with_SA - mean(mean.RW_with_SA, na.rm = TRUE),       
+                                    log.asset = log.asset - mean(log.asset, na.rm = TRUE),
+                                    asset_share.gdp = asset_share.gdp - mean(asset_share.gdp, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux1 = RW*log.asset,
+                                    aux3 = RW*asset_share.gdp,
+                                    aux4 = RW*log.asset*asset_share.gdp), 
+                                    country_name_borrower != country_name, year > 2000))
+F.test.RW[4]<-round(reg.list[[4]]$stage1$iv1fstat$RW["F"],1)
+F.test.aux1[4]<-round(reg.list[[4]]$stage1$iv1fstat$aux1["F"],1)
+F.test.aux2[4]<-round(reg.list[[4]]$stage1$iv1fstat$aux3["F"],1)
+F.test.aux3[4]<-round(reg.list[[4]]$stage1$iv1fstat$aux4["F"],1)
+
+```
+
+
+```{r size_aux, echo=FALSE}
+
+# Dependent variables
+dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+
+# Independent variables
+ind.text <- c( "$\\text{Log assets}_{i,t}$", "$(\\text{Log assets}_{i,t})^2$", "$\\text{Assets to GDP}_{i,t}$",  "$\\text{Log assets}_{i,t} \\times \\text{Assets to GDP}_{i,t}$", "$\\text{RW}_{i,t}$", "$\\text{RW}_{i,t} \\times \\text{Log assets}_{i,t}$","$\\text{RW}_{i,t} \\times (\\text{Log assets}_{i,t})^2$", "$\\text{RW}_{i,t} \\times \\text{Assets to GDP}_{i,t}$", "$\\text{RW}_{i,t} \\times \\text{Log assets}_{i,t} \\times \\text{Assets to GDP}_{i,t}$")
+
+fe.list <- list(c("Controls",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("F-value (1st stage on RW)", F.test.RW))
+
+```
+
+```{r size_table, eval=TRUE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+stargazer(reg.list,
+          title = "Relevance and TBTF considerations",
+          table.layout = "n=c=d#-t-as-",
+          notes = "\\parbox[t]{12cm}{The table shows that the effect depends on the absolute and relative size of banks. The dependent variable is the logarithm of the amount lent by the bank in a loan. The main independent variable is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. All regressions are IV that have the introduction of Basel II and the country average risk-weight as instruments. All regressions include loan and bank fixed effects. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          dep.var.labels   = dep.text,
+          covariate.labels = ind.text,
+          #order            = c(1, 12, 13, seq(2,11)),
+          keep             = c(1, 11, 12, 13, 14, 15, 16, 17, 18, 19),
+          add.lines        = fe.list,
+          #se               = se.list,
+          keep.stat        = c("n","adj.rsq"),
+          header           = FALSE, 
+          font.size        = "scriptsize",
+          notes.label      = "",
+          notes.align      = "c", 
+          notes.append     = FALSE,
+          label            = "tab:main",
+          style            = "qje",
+          column.sep.width = "-1.0pt",
+          align            = TRUE,
+          #no.space        = TRUE,
+          #column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
+          #column.separate  = c(1,1,1,1),
+          float.env        = "sidewaystable",
+          type             = "latex"
+  )
+```
+```{r bank_regressions, echo=FALSE}
+
+# Run the models
+reg.list <- list()
+se.list <- list()
+F.test.RW <- c()
+F.test.aux1 <- c()
+F.test.aux2 <- c()
+F.test.aux3 <- c()
+
+reg.list[[1]] <- felm(log.lender_amount ~ ROE + NPL.ratio + subordinated + log.asset 
+                      + gdp_growth + policy_rate+ capital.ratio + deposit.ratio + loans.ratio + NII.ratio  | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux1 ~ mean.RW_with_SA + mean.RW_with_SA:ROE +
+                                    basel + basel:ROE) | tranche_id,
+                      data = filter(mutate(loan.data,
+                                    mean.RW_with_SA = mean.RW_with_SA - mean(mean.RW_with_SA, na.rm = TRUE),       
+                                    ROE = ROE - mean(ROE, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux1 = RW*ROE), 
+                                    country_name_borrower != country_name, year > 2000))
+F.test.RW[1]<-round(reg.list[[1]]$stage1$iv1fstat$RW["F"],1)
+F.test.aux1[1]<-round(reg.list[[1]]$stage1$iv1fstat$aux1["F"],1)
+
+
+
+reg.list[[2]] <- felm(log.lender_amount ~ ROE + NPL.ratio + subordinated + log.asset 
+                      + gdp_growth + policy_rate+ capital.ratio + deposit.ratio + loans.ratio + NII.ratio | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux2 ~ mean.RW_with_SA + mean.RW_with_SA:NPL.ratio +
+                                    basel + basel:NPL.ratio) | tranche_id,
+                      data = filter(mutate(loan.data,
+                                    mean.RW_with_SA = mean.RW_with_SA - mean(mean.RW_with_SA, na.rm = TRUE),
+                                    NPL.ratio = NPL.ratio - mean(NPL.ratio, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux2 = RW*NPL.ratio), 
+                                    country_name_borrower != country_name, year > 2000))
+F.test.RW[2]<-round(reg.list[[2]]$stage1$iv1fstat$RW["F"],1)
+F.test.aux1[2]<-round(reg.list[[2]]$stage1$iv1fstat$aux2["F"],1)
+
+reg.list[[3]] <- felm(log.lender_amount ~ ROE + NPL.ratio + subordinated + log.asset 
+                      + gdp_growth + policy_rate+ capital.ratio + deposit.ratio + loans.ratio + NII.ratio | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux3 ~ mean.RW_with_SA + mean.RW_with_SA:subordinated +
+                                    basel + basel:subordinated) | tranche_id,
+                      data = filter(mutate(loan.data,
+                                    mean.RW_with_SA = mean.RW_with_SA - mean(mean.RW_with_SA, na.rm = TRUE),       
+                                    subordinated = subordinated - mean(subordinated, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux3 = RW*subordinated), 
+                                    country_name_borrower != country_name, year > 2000))
+F.test.RW[3]<-round(reg.list[[3]]$stage1$iv1fstat$RW["F"],1)
+F.test.aux1[3]<-round(reg.list[[3]]$stage1$iv1fstat$aux3["F"],1)
+
+
+```
+
+
+```{r bank_aux, echo=FALSE}
+
+# Dependent variables
+dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+
+# Independent variables
+ind.text <- c( "$\\text{ROE}_{i,t}$", "$\\text{NPL ratio}_{i,t}$",  "$\\text{Subordinated debt}_{i,t}$", "$\\text{RW}_{i,t}$",  "$\\text{RW}_{i,t} \\times \\text{ROE}_{i,t}$", "$\\text{RW}_{i,t} \\times \\text{NPL ratio}_{i,t}$", "$\\text{RW}_{i,t} \\times \\text{Subordinated debt}_{i,t}$")
+
+fe.list <- list(c("Controls",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("F-value (1st stage on RW)", F.test.RW))
+
+```
+
+```{r bank_table, eval=TRUE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+stargazer(reg.list,
+          title = "Balance sheet composition, risk-weights and lending",
+          table.layout = "n=c=d#-t-as-",
+          notes = "\\parbox[t]{11cm}{The table shows that the effect depends the profitability, the quality of the assets and the funding structure. The dependent variable is the logarithm of the amount lent by the bank in a loan. The main independent variable is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. All regressions are IV that have the introduction of Basel II and the country average risk-weight as instruments. All regressions include loan and bank fixed effects. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          dep.var.labels   = dep.text,
+          covariate.labels = ind.text,
+          #order            = c(11, 1, 2, 3, 12, 13, 14, seq(4,10)),
+          keep             = c(1, 2, 3, 11, 12, 13, 14),
+          add.lines        = fe.list,
+          #se               = se.list,
+          keep.stat        = c("n","adj.rsq"),
+          header           = FALSE, 
+          font.size        = "scriptsize",
+          notes.label      = "",
+          notes.align      = "c", 
+          notes.append     = FALSE,
+          label            = "tab:main",
+          style            = "qje",
+          column.sep.width = "-1.0pt",
+          align            = TRUE,
+          #no.space        = TRUE,
+          #column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
+          #column.separate  = c(1,1,1,1),
+          float.env        = "sidewaystable",
+          type             = "latex"
+  )
+```
+
+
+
+\newpage
+
+\appendix 
+
+\section{} \label{sec:appendixa}
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{A\arabic{figure}}
+
+```{r intro_regressions, echo=FALSE}
+ loan.data <- loan.data %>%
+  full_join(select(aux.data, bvdid, year, introduction_IRB, change, post_IRB), by = c("bvdid", "year"))
+
+# Run the models
+reg.list <- list()
+se.list <- list()
+reg.list[[1]] <- felm(log.lender_amount ~ RW +  introduction_IRB +post_IRB+ aux1 + aux2 
+                      + gdp_growth + policy_rate+ capital.ratio + ROE+  NPL.ratio + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset
+                      | as.factor(bvdid) + tranche_id  | 0 | tranche_id,
+                      data = filter(mutate( loan.data,
+                                    aux1 = RW*introduction_IRB,
+                                    aux2 = RW*post_IRB), 
+                                    country_name_borrower != country_name, year > 2000))
+se.list[[1]]  <- summary(reg.list[[1]], robust = TRUE)$coefficients[,2]
+
+
+reg.list[[2]] <- felm(log.lender_amount ~  introduction_IRB +post_IRB
+                      + gdp_growth + policy_rate+ capital.ratio  + ROE+ NPL.ratio + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux1 | aux2 ~ basel + basel:introduction_IRB +  basel:post_IRB ) |tranche_id,
+                      data = filter(mutate( loan.data,
+                                    aux1 = RW*introduction_IRB,
+                                    aux2 = RW*post_IRB), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`aux1(fit)`']<-'aux1'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`aux1(fit)`']<-'aux1'
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`aux2(fit)`']<-'aux2'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`aux2(fit)`']<-'aux2'
+
+reg.list[[3]] <- felm(log.lender_amount ~  introduction_IRB +post_IRB
+                      + gdp_growth + policy_rate+ capital.ratio + ROE+ NPL.ratio + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux1 | aux2 ~ mean.RW_adj + mean.RW_adj:introduction_IRB + mean.RW_adj:post_IRB) |tranche_id,
+                     data = filter(mutate( loan.data,
+                                    aux1 = RW*introduction_IRB,
+                                    aux2 = RW*post_IRB), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`aux1(fit)`']<-'aux1'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`aux1(fit)`']<-'aux1'
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`aux2(fit)`']<-'aux2'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`aux2(fit)`']<-'aux2'
+
+
+reg.list[[4]] <- felm(log.lender_amount ~ introduction_IRB +post_IRB
+                      + gdp_growth + policy_rate+ capital.ratio + ROE+ NPL.ratio  + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux1 | aux2 ~ mean.RW_adj + mean.RW_adj:introduction_IRB + mean.RW_adj:post_IRB +
+                                    basel +basel:introduction_IRB +basel:post_IRB) | tranche_id,
+                       data = filter(mutate( loan.data,
+                                    aux1 = RW*introduction_IRB,
+                                    aux2 = RW*post_IRB), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`aux1(fit)`']<-'aux1'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`aux1(fit)`']<-'aux1'
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`aux2(fit)`']<-'aux2'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`aux2(fit)`']<-'aux2'
+
+
+```
+
+
+```{r year_int_aux, echo=FALSE}
+
+# Dependent variables
+dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+
+# Independent variables
+ind.text <- c("$\\text{RW}_{i,t}$", "$\\text{SSM}_{i,t}$", "$\\text{RW}_{i,t} \\times  \\text{SSM}_{i,t}$",
+              "$\\text{Basel II}_{c,t}$", "$\\overline{\\text{RW}}_{c,-i,t}$",
+              "$\\text{GDP growth rate}_{c,t}$", "$\\text{Policy rate}_{c,t}$",
+              "$\\text{Log asset}_{i,t}$",
+              "$\\text{Capital ratio}_{i,t}$", "$\\text{ROE}_{i,t}$", "$\\text{Deposit ratio}_{i,t}$",
+              "$\\text{Loans ratio}_{i,t}$", "$\\text{Net interest income}_{i,t}$", "$\\text{NPL ratio}_{i,t}$",
+              "$\\text{Subordinated debt}_{i,t}$")
+
+fe.list <- list(c("Controls",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))))
+
+```
+
+```{r year_int_table, eval=FALSE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+stargazer(reg.list,
+          title = "Results: IRB introduction interactions",
+          table.layout = "n=c=d#-t-as-",
+          notes = "\\parbox[t]{10cm}{The table shows the effect of risk-weights on corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a facility. The independent variable is the average risk-weight of the bank's corporate portfolio in the year that the facility was issued. All regressions include facility and bank fixed effects. Robust standard errors are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          #dep.var.labels   = dep.text,
+          #covariate.labels = ind.text,
+          #order            = c(1, 12, 13, seq(2,11)),
+          #keep             = c(1, 2, 3, 14, 15),
+          add.lines        = fe.list,
+          #se               = se.list,
+          keep.stat        = c("n","adj.rsq"),
+          header           = FALSE, 
+          font.size        = "scriptsize",
+          notes.label      = "",
+          notes.align      = "c", 
+          notes.append     = FALSE,
+          label            = "tab:main",
+          style            = "qje",
+          column.sep.width = "-1.0pt",
+          align            = TRUE,
+          #no.space        = TRUE,
+          column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
+          column.separate  = c(1,1,1,1),
+          #float.env        = "sidewaystable",
+          type             = "latex"
+  )
+```
+
+
+\newpage
+\section{}  \label{sec:appendixb}
+
+\setcounter{table}{0}
+\renewcommand{\thetable}{B\arabic{table}}
+
+```{r benchmark_regressions_alt, echo=FALSE}
+
+# Run the models
+reg.list <- list()
+se.list <- list()
+reg.list[[1]] <- felm(log.lender_amount ~ RW + gdp_growth +policy_rate+ log.asset + capital.ratio + ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated
+                      | as.factor(bvdid) + tranche_id  | 0 | tranche_id,
                       data = filter(loan.data, country_name_borrower != country_name, year > 2000))
 se.list[[1]]  <- summary(reg.list[[1]], robust = TRUE)$coefficients[,2]
 
 
-reg.list[[3]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid) + tranche_id| (RW ~ basel) | 0,
+reg.list[[3]] <- felm(log.lender_amount ~  gdp_growth+policy_rate+log.asset + capital.ratio + ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated
+                      | as.factor(bvdid) +  tranche_id | (RW ~ basel) | tranche_id,
                       data = filter(loan.data, country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`RW(fit)`']<-'RW'
 se.list[[3]]  <- summary(reg.list[[3]], robust = TRUE)$coefficients[,2]
+
 
 reg.list[[2]] <- reg.list[[3]]$stage1
 se.list[[2]]  <- summary(reg.list[[2]], robust = TRUE)$coefficients[,2]
 
-reg.list[[5]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid)  + tranche_id | (RW ~ mean.RW_adj ) | 0,
+reg.list[[5]] <- felm(log.lender_amount ~  gdp_growth+policy_rate+log.asset + capital.ratio + ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated
+                      | as.factor(bvdid) +  tranche_id  | (RW ~ w.mean.RW_with_SA ) | tranche_id,
                       data = filter(loan.data, country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[5]]$coefficients)[rownames(reg.list[[5]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[5]]$beta)[rownames(reg.list[[5]]$beta)=='`RW(fit)`']<-'RW'
 se.list[[5]]  <- summary(reg.list[[5]], robust = TRUE)$coefficients[,2]
+
 
 reg.list[[4]] <- reg.list[[5]]$stage1
 se.list[[4]]  <- summary(reg.list[[4]], robust = TRUE)$coefficients[,2]
 
 
-reg.list[[7]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid)  + tranche_id | (RW ~ basel + mean.RW_adj ) | 0,
+reg.list[[7]] <- felm(log.lender_amount ~  gdp_growth+ policy_rate+ log.asset + capital.ratio + ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated
+                      | as.factor(bvdid) + tranche_id | (RW ~ basel + w.mean.RW_with_SA ) | tranche_id ,
                       data = filter(loan.data, country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[7]]$coefficients)[rownames(reg.list[[7]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[7]]$beta)[rownames(reg.list[[7]]$beta)=='`RW(fit)`']<-'RW'
 se.list[[7]]  <- summary(reg.list[[7]], robust = TRUE)$coefficients[,2]
 
 
@@ -591,168 +1231,809 @@ se.list[[6]]  <- summary(reg.list[[6]], robust = TRUE)$coefficients[,2]
 
 ```
 
-```{r tables_aux2, echo=FALSE}
+
+```{r benchmark_aux_alt, echo=FALSE}
 
 # Dependent variables
-dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$", "$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
 
 # Independent variables
-ind.text <- c("$\\text{RW}_{i,t}$", "$\\text{Basel II}_{c,t}$", "$\\widehat{\\text{RW}}_{c,t}$", "$\\overline{\\text{RW}}_{c,t}$")
+ind.text <- c("$\\text{RW}_{i,t}$", "$\\text{Basel II}_{c,t}$", "$\\overline{\\text{RW}}_{c,-i,t}$",
+              "$\\text{GDP growth rate}_{c,t}$", 
+              "$\\text{Policy rate}_{c,t}$",
+              "$\\text{Log asset}_{i,t}$",
+              "$\\text{Capital ratio}_{i,t}$", "$\\text{ROE}_{i,t}$", "$\\text{Deposit ratio}_{i,t}$",
+              "$\\text{Loans ratio}_{i,t}$", "$\\text{Net interest income}_{i,t}$", "$\\text{NPL ratio}_{i,t}$",
+              "$\\text{Subordinated debt}_{i,t}$")
 
 fe.list <- list(c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
-                c("Bank $\\times$ year FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))))
+                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))))
 
 ```
 
-```{r table_regression2, eval=TRUE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+```{r benchmark_table_alt, eval=TRUE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
 stargazer(reg.list,
-          title = "Results",
+          title = "Risk-weights and Corporate Lending",
           table.layout = "n=c=d#-t-as-",
-          notes = "\\parbox[t]{14cm}{The table shows the effect of risk-weights on corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a facility. The independent variable is the average risk-weight of the bank's corporate portfolio in the year that the facility was issued. All regressions include facility and bank fixed effects. Robust standard errors are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          notes = "\\parbox[t]{19cm}{The table shows the effect of risk-weights on corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a loan. The main independent variable is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. All regressions include loan and bank fixed effects. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
           dep.var.labels   = dep.text,
           covariate.labels = ind.text,
+          order           = c(1, 12, 13, seq(2,11)),
           add.lines        = fe.list,
-          se               = se.list,
-          keep.stat        = c("n","rsq"),
+          #se               = se.list,
+          keep.stat        = c("n","adj.rsq"),
           header           = FALSE, 
-          type             = "latex",
-          font.size        = "footnotesize",
+          font.size        = "scriptsize",
           notes.label      = "",
           notes.align      = "c", 
           notes.append     = FALSE,
           label            = "tab:main",
           style            = "qje",
-          column.sep.width = "0.5pt",
+          column.sep.width = "-1.0pt",
           align            = TRUE,
-          float.env        = "sidewaystable")
+          #no.space        = TRUE,
+          column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
+          column.separate  = c(1,2,2,2),
+          float.env        = "sidewaystable",
+          type             = "latex"
+  )
 ```
 
-```{r regressions_iv, echo=FALSE, }
+
+```{r cap_int_regressions, echo=FALSE}
 
 # Run the models
 reg.list <- list()
 se.list <- list()
-reg.list[[1]] <- felm(log.lender_amount ~ RW  | as.factor(bvdid) + tranche_id | 0 | 0,
-                      data = filter(loan.data, country_name_borrower != country_name, year > 2007))
+reg.list[[1]] <- felm(log.lender_amount ~ RW + capital.ratio + aux
+                      + gdp_growth + policy_rate+ log.asset +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated
+                      | as.factor(bvdid) + tranche_id  | 0 | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    capital.ratio = capital.ratio - mean(capital.ratio, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*capital.ratio),
+                                    country_name_borrower != country_name, year > 2000))
 se.list[[1]]  <- summary(reg.list[[1]], robust = TRUE)$coefficients[,2]
 
 
-reg.list[[3]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid) + tranche_id| (RW ~ IRB) | 0,
-                      data = filter(loan.data, country_name_borrower != country_name, year > 2007))
-se.list[[3]]  <- summary(reg.list[[3]], robust = TRUE)$coefficients[,2]
+reg.list[[2]] <- felm(log.lender_amount ~ capital.ratio
+                      + gdp_growth + policy_rate+ log.asset +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ basel + basel:capital.ratio ) |tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    capital.ratio = capital.ratio - mean(capital.ratio, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*capital.ratio), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`aux(fit)`']<-'aux'
 
-reg.list[[2]] <- reg.list[[3]]$stage1
-se.list[[2]]  <- summary(reg.list[[2]], robust = TRUE)$coefficients[,2]
+reg.list[[3]] <- felm(log.lender_amount ~ capital.ratio
+                      + gdp_growth + policy_rate+ log.asset +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ mean.RW_adj + mean.RW_adj:capital.ratio ) |tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    capital.ratio = capital.ratio - mean(capital.ratio, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*capital.ratio), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`aux(fit)`']<-'aux'
 
-reg.list[[5]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid)  + tranche_id | (RW ~ mean.RW_adj ) | 0,
-                      data = filter(loan.data, country_name_borrower != country_name, year > 2007))
-se.list[[5]]  <- summary(reg.list[[5]], robust = TRUE)$coefficients[,2]
-
-reg.list[[4]] <- reg.list[[5]]$stage1
-se.list[[4]]  <- summary(reg.list[[4]], robust = TRUE)$coefficients[,2]
-
-
-reg.list[[7]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid)  + tranche_id | (RW ~ IRB + mean.RW_adj ) | 0,
-                      data = filter(loan.data, country_name_borrower != country_name, year > 2007))
-se.list[[7]]  <- summary(reg.list[[7]], robust = TRUE)$coefficients[,2]
-
-
-reg.list[[6]] <- reg.list[[7]]$stage1
-se.list[[6]]  <- summary(reg.list[[6]], robust = TRUE)$coefficients[,2]
-
+reg.list[[4]] <- felm(log.lender_amount ~ capital.ratio
+                      + gdp_growth + policy_rate+ log.asset +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ mean.RW_adj + mean.RW_adj:capital.ratio +
+                                    basel + basel:capital.ratio ) | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    capital.ratio = capital.ratio - mean(capital.ratio, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*capital.ratio), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`aux(fit)`']<-'aux'
 
 
 ```
 
-```{r tables_aux_iv, echo=FALSE}
+
+```{r cap_int_aux, echo=FALSE}
 
 # Dependent variables
-dep.text <- c("$\\text{Log loan}_{l,i}$", "$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
 
 # Independent variables
-ind.text <- c( "$\\text{RW}_{i,t}$", "$\\text{IRB}_{c,t}$", "$\\widehat{\\text{RW}}_{c,t}$", "$\\overline{\\text{RW}}_{c,t}$")
+ind.text <- c("$\\text{RW}_{i,t}$", "$\\text{Capital ratio}_{i,t}$", "$\\text{RW}_{i,t} \\times \\text{Capital ratio}_{i,t}$",
+              "$\\text{Basel II}_{c,t}$", "$\\overline{\\text{RW}}_{c,-i,t}$",
+              "$\\text{GDP growth rate}_{c,t}$", "$\\text{Policy rate}_{c,t}$",
+              "$\\text{Log asset}_{i,t}$",
+              "$\\text{Capital ratio}_{i,t}$", "$\\text{ROE}_{i,t}$", "$\\text{Deposit ratio}_{i,t}$",
+              "$\\text{Loans ratio}_{i,t}$", "$\\text{Net interest income}_{i,t}$", "$\\text{NPL ratio}_{i,t}$",
+              "$\\text{Subordinated debt}_{i,t}$")
 
-fe.list <- list(c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
-                c("Bank $\\times$ year FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))))
+fe.list <- list(c("Controls",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))))
 
 ```
 
-```{r table_regression_iv, eval=TRUE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+```{r cap_int_table, eval=FALSE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
 stargazer(reg.list,
-          title = "Results",
+          title = "Results: BASEL from 1995",
           table.layout = "n=c=d#-t-as-",
-          notes = "\\parbox[t]{14cm}{The table shows the effect of risk-weights on corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a facility. The independent variable is the average risk-weight of the bank's corporate portfolio in the year that the facility was issued. All regressions include facility and bank fixed effects. Robust standard errors are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          notes = "\\parbox[t]{10cm}{The table shows the effect of risk-weights on corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a facility. The independent variable is the average risk-weight of the bank's corporate portfolio in the year that the facility was issued. All regressions include facility and bank fixed effects. Robust standard errors are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
           dep.var.labels   = dep.text,
           covariate.labels = ind.text,
+          #order            = c(1, 12, 13, seq(2,11)),
+          keep             = c(1, 2, 3, 13, 14),
           add.lines        = fe.list,
-          se               = se.list,
-          keep.stat        = c("n","rsq"),
+          #se               = se.list,
+          keep.stat        = c("n","adj.rsq"),
           header           = FALSE, 
-          type             = "latex",
-          font.size        = "footnotesize",
+          font.size        = "scriptsize",
           notes.label      = "",
           notes.align      = "c", 
           notes.append     = FALSE,
           label            = "tab:main",
           style            = "qje",
-          column.sep.width = "0.5pt",
+          column.sep.width = "-1.0pt",
           align            = TRUE,
-          float.env        = "sidewaystable")
+          #no.space        = TRUE,
+          column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
+          column.separate  = c(1,1,1,1),
+          float.env        = "sidewaystable",
+          type             = "latex"
+  )
 ```
 
-```{r regressions_irb, echo=FALSE, }
+
+```{r size_int_regressions, echo=FALSE}
 
 # Run the models
 reg.list <- list()
 se.list <- list()
-reg.list[[1]] <- felm(log.lender_amount ~ RW  | as.factor(bvdid) + tranche_id | 0 | 0,
-                      data = filter(loan.data, country_name_borrower != country_name, IRB == 1))
+reg.list[[1]] <- felm(log.lender_amount ~ RW + log.asset + aux
+                      + gdp_growth + policy_rate+ capital.ratio +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated
+                      | as.factor(bvdid) + tranche_id  | 0 | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    log.asset = log.asset - mean(log.asset, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*log.asset),
+                                    country_name_borrower != country_name, year > 2000))
 se.list[[1]]  <- summary(reg.list[[1]], robust = TRUE)$coefficients[,2]
 
 
-reg.list[[3]] <- felm(log.lender_amount ~ 1 | as.factor(bvdid) + tranche_id| (RW ~ mean.RW_adj) | 0,
-                      data = filter(loan.data, country_name_borrower != country_name, IRB == 1))
-se.list[[3]]  <- summary(reg.list[[3]], robust = TRUE)$coefficients[,2]
+reg.list[[2]] <- felm(log.lender_amount ~ log.asset
+                      + gdp_growth + policy_rate+ capital.ratio  +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ basel + basel:log.asset ) |tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    log.asset = log.asset - mean(log.asset, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*log.asset), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`aux(fit)`']<-'aux'
 
-reg.list[[2]] <- reg.list[[3]]$stage1
-se.list[[2]]  <- summary(reg.list[[2]], robust = TRUE)$coefficients[,2]
+reg.list[[3]] <- felm(log.lender_amount ~ log.asset 
+                      + gdp_growth + policy_rate+ capital.ratio +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ mean.RW_adj + mean.RW_adj:log.asset ) |tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    log.asset = log.asset - mean(log.asset, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*log.asset), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`aux(fit)`']<-'aux'
 
+reg.list[[4]] <- felm(log.lender_amount ~ log.asset
+                      + gdp_growth + policy_rate+ capital.ratio +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + subordinated | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ mean.RW_adj + mean.RW_adj:log.asset +
+                                    basel +basel:log.asset) | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    log.asset = log.asset - mean(log.asset, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*log.asset), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`aux(fit)`']<-'aux'
 
 
 ```
 
-```{r tables_aux_irb, echo=FALSE}
+
+```{r size_int_aux, echo=FALSE}
 
 # Dependent variables
-dep.text <- c("$\\text{Log loan}_{l,i}$", "$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
 
 # Independent variables
-ind.text <- c( "$\\text{RW}_{i,t}$", "$\\overline{\\text{RW}}_{c,t}$",  "$\\widehat{\\text{RW}}_{c,t}$")
+ind.text <- c("$\\text{RW}_{i,t}$", "$\\text{Log asset}_{i,t}$", "$\\text{RW}_{i,t} \\times \\text{Log asset}_{i,t}$",
+              "$\\text{Basel II}_{c,t}$", "$\\overline{\\text{RW}}_{c,-i,t}$",
+              "$\\text{GDP growth rate}_{c,t}$", "$\\text{Policy rate}_{c,t}$",
+              "$\\text{Log asset}_{i,t}$",
+              "$\\text{Capital ratio}_{i,t}$", "$\\text{ROE}_{i,t}$", "$\\text{Deposit ratio}_{i,t}$",
+              "$\\text{Loans ratio}_{i,t}$", "$\\text{Net interest income}_{i,t}$", "$\\text{NPL ratio}_{i,t}$",
+              "$\\text{Subordinated debt}_{i,t}$")
 
-fe.list <- list(c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
-                c("Bank $\\times$ year FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))))
+fe.list <- list(c("Controls",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))))
 
 ```
 
-```{r table_regression_irb, eval=TRUE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+```{r size_int_table, eval=FALSE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
 stargazer(reg.list,
-          title = "Results",
+          title = "Results: BASEL from 1995",
           table.layout = "n=c=d#-t-as-",
-          notes = "\\parbox[t]{14cm}{The table shows the effect of risk-weights on corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a facility. The independent variable is the average risk-weight of the bank's corporate portfolio in the year that the facility was issued. All regressions include facility and bank fixed effects. Robust standard errors are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          notes = "\\parbox[t]{10cm}{The table shows the effect of risk-weights on corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a facility. The independent variable is the average risk-weight of the bank's corporate portfolio in the year that the facility was issued. All regressions include facility and bank fixed effects. Robust standard errors are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
           dep.var.labels   = dep.text,
           covariate.labels = ind.text,
+          #order            = c(1, 12, 13, seq(2,11)),
+          keep             = c(1, 2, 3, 13, 14),
           add.lines        = fe.list,
-          se               = se.list,
-          keep.stat        = c("n","rsq"),
+          #se               = se.list,
+          keep.stat        = c("n","adj.rsq"),
           header           = FALSE, 
-          type             = "latex",
-          font.size        = "footnotesize",
+          font.size        = "scriptsize",
           notes.label      = "",
           notes.align      = "c", 
           notes.append     = FALSE,
           label            = "tab:main",
           style            = "qje",
-          column.sep.width = "0.5pt",
+          column.sep.width = "-1.0pt",
           align            = TRUE,
-          float.env        = "sidewaystable")
+          #no.space        = TRUE,
+          column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
+          column.separate  = c(1,1,1,1),
+          float.env        = "sidewaystable",
+          type             = "latex"
+  )
+```
+
+
+```{r sub_int_regressions, echo=FALSE}
+
+# Run the models
+reg.list <- list()
+se.list <- list()
+reg.list[[1]] <- felm(log.lender_amount ~ RW + subordinated +  aux
+                      + gdp_growth + policy_rate+ capital.ratio +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + log.asset
+                      | as.factor(bvdid) + tranche_id  | 0 | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    subordinated = subordinated - mean(subordinated, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*subordinated),
+                                    country_name_borrower != country_name, year > 2000))
+se.list[[1]]  <- summary(reg.list[[1]], robust = TRUE)$coefficients[,2]
+
+
+reg.list[[2]] <- felm(log.lender_amount ~ subordinated
+                      + gdp_growth + policy_rate+ capital.ratio  +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ basel + basel:subordinated ) |tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    subordinated = subordinated - mean(subordinated, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*subordinated), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`aux(fit)`']<-'aux'
+
+reg.list[[3]] <- felm(log.lender_amount ~  subordinated
+                      + gdp_growth + policy_rate+ capital.ratio +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ mean.RW_adj + mean.RW_adj:subordinated ) |tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    subordinated = subordinated - mean(subordinated, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*subordinated), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`aux(fit)`']<-'aux'
+
+reg.list[[4]] <- felm(log.lender_amount ~ subordinated
+                      + gdp_growth + policy_rate+ capital.ratio +  ROE + deposit.ratio + loans.ratio + NII.ratio +  NPL.ratio + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ mean.RW_adj + mean.RW_adj:subordinated +
+                                    basel +basel:subordinated) | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    subordinated = subordinated - mean(subordinated, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*subordinated), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`aux(fit)`']<-'aux'
+
+
+```
+
+
+```{r sub_int_aux, echo=FALSE}
+
+# Dependent variables
+dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+
+# Independent variables
+ind.text <- c("$\\text{RW}_{i,t}$", "$\\text{Subordinated debt}_{i,t}$", "$\\text{RW}_{i,t} \\times \\text{Subordinated debt}_{i,t}$",
+              "$\\text{Basel II}_{c,t}$", "$\\overline{\\text{RW}}_{c,-i,t}$",
+              "$\\text{GDP growth rate}_{c,t}$", "$\\text{Policy rate}_{c,t}$",
+              "$\\text{Log asset}_{i,t}$",
+              "$\\text{Capital ratio}_{i,t}$", "$\\text{ROE}_{i,t}$", "$\\text{Deposit ratio}_{i,t}$",
+              "$\\text{Loans ratio}_{i,t}$", "$\\text{Net interest income}_{i,t}$", "$\\text{NPL ratio}_{i,t}$",
+              "$\\text{Subordinated debt}_{i,t}$")
+
+fe.list <- list(c("Controls",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))))
+
+```
+
+```{r sub_int_table, eval=FALSE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+stargazer(reg.list,
+          title = "Results: BASEL from 1995",
+          table.layout = "n=c=d#-t-as-",
+          notes = "\\parbox[t]{10cm}{The table shows the effect of risk-weights on corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a facility. The independent variable is the average risk-weight of the bank's corporate portfolio in the year that the facility was issued. All regressions include facility and bank fixed effects. Robust standard errors are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          dep.var.labels   = dep.text,
+          covariate.labels = ind.text,
+          #order            = c(1, 12, 13, seq(2,11)),
+          keep             = c(1, 2, 3, 13, 14),
+          add.lines        = fe.list,
+          #se               = se.list,
+          keep.stat        = c("n","adj.rsq"),
+          header           = FALSE, 
+          font.size        = "scriptsize",
+          notes.label      = "",
+          notes.align      = "c", 
+          notes.append     = FALSE,
+          label            = "tab:main",
+          style            = "qje",
+          column.sep.width = "-1.0pt",
+          align            = TRUE,
+          #no.space        = TRUE,
+          column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
+          column.separate  = c(1,1,1,1),
+          float.env        = "sidewaystable",
+          type             = "latex"
+  )
+```
+
+```{r npl_int_regressions, echo=FALSE}
+
+# Run the models
+reg.list <- list()
+se.list <- list()
+reg.list[[1]] <- felm(log.lender_amount ~ RW + NPL.ratio +  aux
+                      + gdp_growth + policy_rate+ capital.ratio +  ROE + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset
+                      | as.factor(bvdid) + tranche_id  | 0 | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    NPL.ratio = NPL.ratio - mean(NPL.ratio, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*NPL.ratio),
+                                    country_name_borrower != country_name, year > 2000))
+se.list[[1]]  <- summary(reg.list[[1]], robust = TRUE)$coefficients[,2]
+
+
+reg.list[[2]] <- felm(log.lender_amount ~  NPL.ratio
+                      + gdp_growth + policy_rate+ capital.ratio  +  ROE + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ basel + basel:NPL.ratio ) |tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    NPL.ratio = NPL.ratio - mean(NPL.ratio, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*NPL.ratio), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`aux(fit)`']<-'aux'
+
+reg.list[[3]] <- felm(log.lender_amount ~  NPL.ratio
+                      + gdp_growth + policy_rate+ capital.ratio +  ROE + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ mean.RW_adj + mean.RW_adj:NPL.ratio) |tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    NPL.ratio = NPL.ratio - mean(NPL.ratio, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*NPL.ratio), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`aux(fit)`']<-'aux'
+
+reg.list[[4]] <- felm(log.lender_amount ~ NPL.ratio
+                      + gdp_growth + policy_rate+ capital.ratio +  ROE + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ mean.RW_adj + mean.RW_adj:NPL.ratio +
+                                    basel +basel:NPL.ratio) | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    NPL.ratio = NPL.ratio - mean(NPL.ratio, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*NPL.ratio), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`aux(fit)`']<-'aux'
+
+
+```
+
+
+```{r npl_int_aux, echo=FALSE}
+
+# Dependent variables
+dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+
+# Independent variables
+ind.text <- c("$\\text{RW}_{i,t}$", "$\\text{NPL ratio}_{i,t}$", "$\\text{RW}_{i,t} \\times  \\text{NPL ratio}_{i,t}$",
+              "$\\text{Basel II}_{c,t}$", "$\\overline{\\text{RW}}_{c,-i,t}$",
+              "$\\text{GDP growth rate}_{c,t}$", "$\\text{Policy rate}_{c,t}$",
+              "$\\text{Log asset}_{i,t}$",
+              "$\\text{Capital ratio}_{i,t}$", "$\\text{ROE}_{i,t}$", "$\\text{Deposit ratio}_{i,t}$",
+              "$\\text{Loans ratio}_{i,t}$", "$\\text{Net interest income}_{i,t}$", "$\\text{NPL ratio}_{i,t}$",
+              "$\\text{Subordinated debt}_{i,t}$")
+
+fe.list <- list(c("Controls",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))))
+
+```
+
+```{r npl_int_table, eval=FALSE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+stargazer(reg.list,
+          title = "Results: BASEL from 1995",
+          table.layout = "n=c=d#-t-as-",
+          notes = "\\parbox[t]{10cm}{The table shows the effect of risk-weights on corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a facility. The independent variable is the average risk-weight of the bank's corporate portfolio in the year that the facility was issued. All regressions include facility and bank fixed effects. Robust standard errors are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          dep.var.labels   = dep.text,
+          covariate.labels = ind.text,
+          #order            = c(1, 12, 13, seq(2,11)),
+          keep             = c(1, 2, 3, 13, 14),
+          add.lines        = fe.list,
+          #se               = se.list,
+          keep.stat        = c("n","adj.rsq"),
+          header           = FALSE, 
+          font.size        = "scriptsize",
+          notes.label      = "",
+          notes.align      = "c", 
+          notes.append     = FALSE,
+          label            = "tab:main",
+          style            = "qje",
+          column.sep.width = "-1.0pt",
+          align            = TRUE,
+          #no.space        = TRUE,
+          column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
+          column.separate  = c(1,1,1,1),
+          float.env        = "sidewaystable",
+          type             = "latex"
+  )
+```
+
+```{r roe_int_regressions, echo=FALSE}
+
+# Run the models
+reg.list <- list()
+se.list <- list()
+reg.list[[1]] <- felm(log.lender_amount ~ RW + ROE +  aux
+                      + gdp_growth + policy_rate+ capital.ratio +  NPL.ratio + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset
+                      | as.factor(bvdid) + tranche_id  | 0 | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    ROE = ROE - mean(ROE, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*ROE),
+                                    country_name_borrower != country_name, year > 2000))
+se.list[[1]]  <- summary(reg.list[[1]], robust = TRUE)$coefficients[,2]
+
+
+reg.list[[2]] <- felm(log.lender_amount ~  ROE
+                      + gdp_growth + policy_rate+ capital.ratio  +  NPL.ratio + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ basel + basel:ROE ) |tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    ROE = ROE - mean(ROE, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*ROE), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`aux(fit)`']<-'aux'
+
+reg.list[[3]] <- felm(log.lender_amount ~  ROE
+                      + gdp_growth + policy_rate+ capital.ratio +  NPL.ratio + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ mean.RW_adj + mean.RW_adj:ROE) |tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    ROE = ROE - mean(ROE, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*ROE), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`aux(fit)`']<-'aux'
+
+reg.list[[4]] <- felm(log.lender_amount ~ ROE
+                      + gdp_growth + policy_rate+ capital.ratio + NPL.ratio  + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ mean.RW_adj + mean.RW_adj:ROE +
+                                    basel +basel:ROE) | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    ROE = ROE - mean(ROE, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*ROE), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`aux(fit)`']<-'aux'
+
+
+```
+
+
+```{r roe_int_aux, echo=FALSE}
+
+# Dependent variables
+dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+
+# Independent variables
+ind.text <- c("$\\text{RW}_{i,t}$", "$\\text{ROE}_{i,t}$", "$\\text{RW}_{i,t} \\times  \\text{ROE}_{i,t}$",
+              "$\\text{Basel II}_{c,t}$", "$\\overline{\\text{RW}}_{c,-i,t}$",
+              "$\\text{GDP growth rate}_{c,t}$", "$\\text{Policy rate}_{c,t}$",
+              "$\\text{Log asset}_{i,t}$",
+              "$\\text{Capital ratio}_{i,t}$", "$\\text{ROE}_{i,t}$", "$\\text{Deposit ratio}_{i,t}$",
+              "$\\text{Loans ratio}_{i,t}$", "$\\text{Net interest income}_{i,t}$", "$\\text{NPL ratio}_{i,t}$",
+              "$\\text{Subordinated debt}_{i,t}$")
+
+fe.list <- list(c("Controls",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))))
+
+```
+
+```{r roe_int_table, eval=FALSE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+stargazer(reg.list,
+          title = "Results: BASEL from 1995",
+          table.layout = "n=c=d#-t-as-",
+          notes = "\\parbox[t]{10cm}{The table shows the effect of risk-weights on corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a facility. The independent variable is the average risk-weight of the bank's corporate portfolio in the year that the facility was issued. All regressions include facility and bank fixed effects. Robust standard errors are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          dep.var.labels   = dep.text,
+          covariate.labels = ind.text,
+          #order            = c(1, 12, 13, seq(2,11)),
+          keep             = c(1, 2, 3, 13, 14),
+          add.lines        = fe.list,
+          #se               = se.list,
+          keep.stat        = c("n","adj.rsq"),
+          header           = FALSE, 
+          font.size        = "scriptsize",
+          notes.label      = "",
+          notes.align      = "c", 
+          notes.append     = FALSE,
+          label            = "tab:main",
+          style            = "qje",
+          column.sep.width = "-1.0pt",
+          align            = TRUE,
+          #no.space        = TRUE,
+          column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
+          column.separate  = c(1,1,1,1),
+          float.env        = "sidewaystable",
+          type             = "latex"
+  )
+```
+
+
+```{r ssm_int_regressions, echo=FALSE}
+
+# Run the models
+reg.list <- list()
+se.list <- list()
+reg.list[[1]] <- felm(log.lender_amount ~ RW + SSM +  aux
+                      + gdp_growth + policy_rate+ capital.ratio + ROE+  NPL.ratio + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset
+                      | as.factor(bvdid) + tranche_id  | 0 | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                           aux = RW*SSM),
+                                    country_name_borrower != country_name, year > 2000))
+se.list[[1]]  <- summary(reg.list[[1]], robust = TRUE)$coefficients[,2]
+
+
+reg.list[[2]] <- felm(log.lender_amount ~  SSM
+                      + gdp_growth + policy_rate+ capital.ratio  + ROE+ NPL.ratio + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ basel + basel:SSM ) |tranche_id,
+                      data = filter(mutate(loan.data,
+                                    aux = RW*SSM), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`aux(fit)`']<-'aux'
+
+reg.list[[3]] <- felm(log.lender_amount ~  SSM
+                      + gdp_growth + policy_rate+ capital.ratio + ROE+ NPL.ratio + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ mean.RW_adj + mean.RW_adj:SSM) |tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    aux = RW*SSM), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`aux(fit)`']<-'aux'
+
+reg.list[[4]] <- felm(log.lender_amount ~ SSM
+                      + gdp_growth + policy_rate+ capital.ratio + ROE+ NPL.ratio  + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ mean.RW_adj + mean.RW_adj:SSM +
+                                    basel +basel:SSM) | tranche_id,
+                      data = filter(mutate(loan.data,
+                                    aux = RW*SSM), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`aux(fit)`']<-'aux'
+
+
+```
+
+
+```{r ssm_int_aux, echo=FALSE}
+
+# Dependent variables
+dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+
+# Independent variables
+ind.text <- c("$\\text{RW}_{i,t}$", "$\\text{SSM}_{i,t}$", "$\\text{RW}_{i,t} \\times  \\text{SSM}_{i,t}$",
+              "$\\text{Basel II}_{c,t}$", "$\\overline{\\text{RW}}_{c,-i,t}$",
+              "$\\text{GDP growth rate}_{c,t}$", "$\\text{Policy rate}_{c,t}$",
+              "$\\text{Log asset}_{i,t}$",
+              "$\\text{Capital ratio}_{i,t}$", "$\\text{ROE}_{i,t}$", "$\\text{Deposit ratio}_{i,t}$",
+              "$\\text{Loans ratio}_{i,t}$", "$\\text{Net interest income}_{i,t}$", "$\\text{NPL ratio}_{i,t}$",
+              "$\\text{Subordinated debt}_{i,t}$")
+
+fe.list <- list(c("Controls",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))))
+
+```
+
+```{r ssm_int_table, eval=FALSE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+stargazer(reg.list,
+          title = "Results: BASEL from 1995",
+          table.layout = "n=c=d#-t-as-",
+          notes = "\\parbox[t]{10cm}{The table shows the effect of risk-weights on corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a facility. The independent variable is the average risk-weight of the bank's corporate portfolio in the year that the facility was issued. All regressions include facility and bank fixed effects. Robust standard errors are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          dep.var.labels   = dep.text,
+          covariate.labels = ind.text,
+          #order            = c(1, 12, 13, seq(2,11)),
+          keep             = c(1, 2, 3, 14, 15),
+          add.lines        = fe.list,
+          #se               = se.list,
+          keep.stat        = c("n","adj.rsq"),
+          header           = FALSE, 
+          font.size        = "scriptsize",
+          notes.label      = "",
+          notes.align      = "c", 
+          notes.append     = FALSE,
+          label            = "tab:main",
+          style            = "qje",
+          column.sep.width = "-1.0pt",
+          align            = TRUE,
+          #no.space        = TRUE,
+          column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
+          column.separate  = c(1,1,1,1),
+          float.env        = "sidewaystable",
+          type             = "latex"
+  )
+```
+
+```{r cap_reg_int_regressions, echo=FALSE}
+
+# Run the models
+reg.list <- list()
+se.list <- list()
+reg.list[[1]] <- felm(log.lender_amount ~ RW + cap_reg +  aux
+                      + gdp_growth + policy_rate+ capital.ratio + ROE+  NPL.ratio + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset
+                      | as.factor(bvdid) + tranche_id  | 0 | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    cap_reg = cap_reg - mean(cap_reg, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*cap_reg),
+                                    country_name_borrower != country_name, year > 2000))
+se.list[[1]]  <- summary(reg.list[[1]], robust = TRUE)$coefficients[,2]
+
+
+reg.list[[2]] <- felm(log.lender_amount ~  cap_reg
+                      + gdp_growth + policy_rate+ capital.ratio  + ROE+ NPL.ratio + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ basel + basel:cap_reg ) |tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    cap_reg = cap_reg - mean(cap_reg, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*cap_reg), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`aux(fit)`']<-'aux'
+
+reg.list[[3]] <- felm(log.lender_amount ~  cap_reg
+                      + gdp_growth + policy_rate+ capital.ratio + ROE+ NPL.ratio + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ mean.RW_adj + mean.RW_adj:cap_reg) |tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    cap_reg = cap_reg - mean(cap_reg, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*cap_reg), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`aux(fit)`']<-'aux'
+
+reg.list[[4]] <- felm(log.lender_amount ~ cap_reg
+                      + gdp_growth + policy_rate+ capital.ratio + ROE+ NPL.ratio  + deposit.ratio + loans.ratio + NII.ratio +  subordinated + log.asset | as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux ~ mean.RW_adj + mean.RW_adj:cap_reg +
+                                    basel +basel:cap_reg) | tranche_id,
+                      data = filter(mutate(loan.data, 
+                                    cap_reg = cap_reg - mean(cap_reg, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*cap_reg), 
+                                    country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`aux(fit)`']<-'aux'
+rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`aux(fit)`']<-'aux'
+
+
+```
+
+
+```{r cap_reg_int_aux, echo=FALSE}
+
+# Dependent variables
+dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+
+# Independent variables
+ind.text <- c("$\\text{RW}_{i,t}$", "$\\text{Capital stringency}_{i,t}$", "$\\text{RW}_{i,t} \\times  \\text{Capital stringency}_{i,t}$",
+              "$\\text{Basel II}_{c,t}$", "$\\overline{\\text{RW}}_{c,-i,t}$",
+              "$\\text{GDP growth rate}_{c,t}$", "$\\text{Policy rate}_{c,t}$",
+              "$\\text{Log asset}_{i,t}$",
+              "$\\text{Capital ratio}_{i,t}$", "$\\text{ROE}_{i,t}$", "$\\text{Deposit ratio}_{i,t}$",
+              "$\\text{Loans ratio}_{i,t}$", "$\\text{Net interest income}_{i,t}$", "$\\text{NPL ratio}_{i,t}$",
+              "$\\text{Subordinated debt}_{i,t}$")
+
+fe.list <- list(c("Controls",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))))
+
+```
+
+```{r cap_reg_int_table, eval=FALSE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+stargazer(reg.list,
+          title = "Results: BASEL from 1995",
+          table.layout = "n=c=d#-t-as-",
+          notes = "\\parbox[t]{10cm}{The table shows the effect of risk-weights on corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a facility. The independent variable is the average risk-weight of the bank's corporate portfolio in the year that the facility was issued. All regressions include facility and bank fixed effects. Robust standard errors are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          dep.var.labels   = dep.text,
+          covariate.labels = ind.text,
+          #order            = c(1, 12, 13, seq(2,11)),
+          keep             = c(1, 2, 3, 14, 15),
+          add.lines        = fe.list,
+          #se               = se.list,
+          keep.stat        = c("n","adj.rsq"),
+          header           = FALSE, 
+          font.size        = "scriptsize",
+          notes.label      = "",
+          notes.align      = "c", 
+          notes.append     = FALSE,
+          label            = "tab:main",
+          style            = "qje",
+          column.sep.width = "-1.0pt",
+          align            = TRUE,
+          #no.space        = TRUE,
+          column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
+          column.separate  = c(1,1,1,1),
+          float.env        = "sidewaystable",
+          type             = "latex"
+  )
 ```
