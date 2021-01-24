@@ -30,7 +30,10 @@ parent.lender.link <- read_excel("Data/Raw/Links/DealScan_Parent_Lender_Link.xls
 ifs.country.code <- read_excel("Data/Raw/IFS/ifs_code.xlsx", skip = 1) %>%
   select(contains("Code")) %>%
   rename_all(tolower)%>%
-  rename_all(~ str_replace_all(.,"[:blank:]", "\\_"))
+  rename_all(~ str_replace_all(.,"[:blank:]", "\\_"))%>%
+  mutate(country_code = as.numeric(imf_code),
+         country_code = ifelse(iso_code %in% c("BEL", "DEU", "ESP", "FRA", "FIN", "IRL", "ITA"), 163, country_code),
+         long_country_code = iso_code)
 
 country.code <- read.csv("Data/Raw/WDI/WDICountry.csv", fileEncoding="UTF-8-BOM") %>%
   rename_all(tolower)%>%
@@ -65,7 +68,7 @@ WDI <- read.csv("Data/Raw/WDI/WDIData.csv", fileEncoding = "UTF-8-BOM", check.na
   select(!(""))%>%
   rename_all(tolower)%>%
   rename_all(~ str_replace_all(.,"[:blank:]", "\\_"))%>%
-  filter(indicator_code %in% c("NY.GDP.DEFL.ZS","NY.GDP.PCAP.KD","NY.GDP.MKTP.KD.ZG","PA.NUS.FCRF",
+  filter(indicator_code %in% c("NY.GDP.DEFL.ZS","NY.GDP.PCAP.KD","NY.GDP.MKTP.KD.ZG","PA.NUS.FCRF", "NY.GDP.MKTP.CN",
                                "PX.REX.REER","FS.AST.DOMS.GD.ZS","FS.AST.PRVT.GD.ZS","FD.AST.PRVT.GD.ZS","FP.CPI.TOTL")) %>%
   pivot_longer(cols      = where(is.numeric),
                names_to  = "year") %>%
@@ -88,14 +91,18 @@ IFS <- read.csv("Data/Raw/IFS/IFS.csv", fileEncoding="UTF-8-BOM", check.names = 
   select(!("")) %>%
   rename_all(tolower) %>%
   rename_all(~ str_replace_all(.,"[:blank:]", "\\_")) %>%
-  filter(indicator_code %in% c("FPOLM_PA")) %>%
-  select(-country_name, -attribute, -contains("indicator")) %>%
-  mutate_all(as.numeric) %>%
-  pivot_longer(cols      = -country_code,
+  filter(attribute %in% c("Value")) %>%
+  filter(indicator_code %in% c("FPOLM_PA", "FIDR_PA", "FIDFR_PA")) %>%
+  select(-country_name, -attribute, -indicator_name) %>%
+  mutate(across(where(is.character) & !contains("indicator"),as.numeric)) %>%
+  pivot_longer(cols      = -c("country_code", "indicator_code"),
                names_to = c("year", "month"),
                names_pattern = "(.*)m(.*)",
                values_to = "policy_rate") %>%
-  inner_join(mutate(ifs.country.code, country_code = as.numeric(imf_code), long_country_code = iso_code)) %>%
+  pivot_wider(names_from = "indicator_code",
+              values_from = "policy_rate") %>%
+  mutate(policy_rate = ifelse(country_code == 163, FIDFR_PA, ifelse(is.na(FPOLM_PA),FIDR_PA,FPOLM_PA))) %>%
+  inner_join(select(ifs.country.code, country_code, long_country_code)) %>%
   inner_join(select(country.code, long_country_code, short_country_code)) %>%
   select(country_code = short_country_code, year, month, policy_rate) %>%
   ungroup() %>% 
@@ -175,7 +182,7 @@ lender.data <- dealscan.data[which(grepl("Lender$", names(dealscan.data)))]%>%
   rename_all(funs(str_replace_all(.,"[[:space:]]","_")))%>%
   rename_all(tolower) %>%
   mutate(lender_share = as.numeric(ifelse(lender_share == "N/A", NA, lender_share)),
-         lender_commit = as.numeric(str_replace(lender_commit,"USD ","")),
+         lender_commit = as.numeric(str_replace_all(lender_commit,"[[:alpha:]]|[[:blank:]]","")),
          lender_parent_name = tolower(str_replace_all(lender_parent_name,"[[:space:]]",""))) %>%
   full_join(parent.lender.link, by = c("lender_parent_name"))
 
