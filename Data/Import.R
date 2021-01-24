@@ -32,7 +32,8 @@ ifs.country.code <- read_excel("Data/Raw/IFS/ifs_code.xlsx", skip = 1) %>%
   rename_all(tolower)%>%
   rename_all(~ str_replace_all(.,"[:blank:]", "\\_"))%>%
   mutate(country_code = as.numeric(imf_code),
-         country_code = ifelse(iso_code %in% c("BEL", "DEU", "ESP", "FRA", "FIN", "IRL", "ITA"), 163, country_code),
+         country_code = ifelse(iso_code %in% c("AUT", "BEL", "DEU", "ESP", "FRA", "FIN", "GRC",
+                                               "IRL", "ITA", "LUX", "MLT", "NLD", "PRT", "SVN"), 163, country_code),
          long_country_code = iso_code)
 
 country.code <- read.csv("Data/Raw/WDI/WDICountry.csv", fileEncoding="UTF-8-BOM") %>%
