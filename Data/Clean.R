@@ -54,6 +54,7 @@ loan.data <- lender.data %>%
   left_join(basel.indicator, by = c("country_code_lender"))%>%
   left_join(SSM.indicator, by = c("bvdid", "year"))%>%
   left_join(rename(BRSS, country_code_lender = country_code), by = c("country_code_lender", "year"))%>%
+  left_join(rename(supervision, country_code_lender = country_code), by = c("country_code_lender"))%>%
   left_join(rename(country.names, country_code_lender = country_code), by = c("country_code_lender"))%>%
   left_join(rename(WDI, country_code_lender = country_code), c("country_code_lender", "year")) %>%
   left_join(rename(IFS, country_code_lender = country_code), c("country_code_lender", "year", "month")) %>%
@@ -71,20 +72,26 @@ loan.data <- lender.data %>%
          log.lender_amount          = ifelse(lender_amount_musd>0, log(lender_amount_musd), NA),
          log.constant.lender_amount = ifelse(constant.lender_amount>0, log(constant.lender_amount), NA),
          log.asset     = log(totalassetsmillcu*exchangeratefromoriginalcurrencyusd),
+         log.equity     = log(equitymillcu*exchangeratefromoriginalcurrencyusd),
          deposit.ratio = totalcustomerdepositsmillcu/totalassetsmillcu,
          loans.ratio   = grossloansmillcu/totalassetsmillcu,
          NII.ratio     = netinterestrevenuemillcu/operatingrevenueturnovermillcu,
          income.ratio  = plforperiodnetincomemillcu/totalassetsmillcu,
          ROE           = plbeforetaxmillcu/equitymillcu,
-         ROA           = plbeforetaxmillcu/totalassetsmillcu,
-         leverage      = equitymillcu/totalassetsmillcu,
+         #ROA           = plbeforetaxmillcu/totalassetsmillcu,
+         #leverage      = equitymillcu/totalassetsmillcu,
          subordinated  = subordinateddebtsmemomillcu/(totalassetsmillcu - equitymillcu),
          NPL.ratio     = nonperfloansgrossloans/100,
          LLR.ratio     = loanlossresgrossloans/100,
          capital.ratio = totalcapitalratio/100,
          asset_share.gdp = totalassetsmillcu*10^6/gdp,
-         asset_share.credit = asset_share.gdp*100/domestic_credit_to_private_sector_by_banks
+         asset_share.credit = asset_share.gdp*100/domestic_credit_to_private_sector_by_banks,
+         supervisors_share.credit = number_supervisors*10^11/(domestic_credit_to_private_sector_by_banks*gdp),
+         bank.year.id = paste0(bvdid,year)
     )%>%
+  # IRB banks indicator
+  group_by(bvdid)%>%
+  mutate(IRB.indicator = ifelse(mean(IRB, na.rm =TRUE)>0, 1, 0))%>%
   group_by(country_code_lender, year) %>%
   mutate(mean.RW = ifelse(!is.na(bvdid), mean(mean.RW, na.rm=TRUE), NA),
          mean.RW_adj = ifelse(is.na(mean.RW_adj), mean.RW, mean.RW_adj))%>%
@@ -93,9 +100,10 @@ loan.data <- lender.data %>%
   group_by(lender_parent_name)%>% 
   arrange(lender_parent_name, year) %>%
   fill(c(RW, n_banks), .direction = "up")%>%
-  ungroup()
-  
-loan.data <- loan.data %>%
+  ungroup() 
+
+         
+         loan.data <- loan.data %>%
   filter(bvdid %in% pillar3.data$bvdid, !is.na(lender_amount_musd)) %>%
   select(bvdid, country_code_lender, year, RW) %>%
   group_by(country_code_lender,bvdid, year) %>%
@@ -135,8 +143,8 @@ save(loan.data, file=paste0("Data/Datasets/LoanData.Rda"))
 min_asset <- loan.data %>%
   select(bvdid, year, exchangeratefromoriginalcurrencyusd, totalassetsmillcu, IRB, lender_amount_musd,bank_name) %>%
   mutate(asset =  exchangeratefromoriginalcurrencyusd*totalassetsmillcu) %>%
-  filter(IRB == 1, !is.na(lender_amount_musd)) %>%
- # group_by(bank_name) %>%
+  filter( !is.na(lender_amount_musd)) %>%
+  group_by(bank_name) %>%
   summarise(min_asset = min(asset, na.rm = TRUE)) %>%
   as.numeric()
 
@@ -165,5 +173,13 @@ test2<-loan.data%>%
   distinct(bvdid, year, .keep_all = TRUE)
 
 
+test <-loan.data %>%
+  filter(year > 2000, country_name_borrower != country_name)%>%
+  distinct(country_code_lender)
 
+
+test <-loan.data %>%
+  filter(year > 2000, country_name_borrower != country_name)%>%
+  mutate(aux = (domestic_credit_to_private_sector_by_banks*gdp))%>%
+  distinct(country_code_lender, supervisors_share.credit, number_supervisors, aux, domestic_credit_to_private_sector_by_banks, gdp )
 

@@ -26,7 +26,7 @@ geometry: margin= 1in
 header-includes: \usepackage{rotating, graphicx, dcolumn, longtable, float, siunitx, tabularx, appendix, booktabs} 
 keywords: Bank regulation, Bank supervision, Credit supply
 linkcolor: black
-abstract: We estimate the effect of capital requirements on credit supply and investigate if strategic modeling explains the effect. Using the cross-border syndicated loan market, a hand-collected dataset on corporate risk-weights, and an instrumental variable strategy, we find that banks with lower risk-weights lend more. We test the strategic modeling hypothesis and find that higher supervisory scrutiny decreases the effect of risk-weight on lending. Taken together, the results suggest that, if allowed, banks manipulate risk-weights to gain an advantage in the corporate lending market.
+abstract: We estimate the effect of capital requirements on credit supply and investigate if strategic modeling explains the effect. Using the cross-border syndicated loan market, a hand-collected dataset on corporate risk-weights, and an instrumental variable strategy, we find that banks with lower risk-weights lend more. The effect is stronger among small, and more profitable banks and weaker for banks with lower NPL ratios and for banks experiencing a fall in their capital ratios. We further test the strategic modeling hypothesis and find that higher supervisory scrutiny decreases the effect of risk-weight on lending. Taken together, the results suggest that, if allowed, banks manipulate risk-weights to gain an advantage in the corporate lending market.
 spacing: double
 indent: true
 subtitle: ''
@@ -107,11 +107,7 @@ For the measure of capital requirements, we collect information on the corporate
 
 We find that banks with lower risk-weights lend more. In our preferable specification, the estimation implies that a decrease of one standard deviation in risk-weights increases lending by 2.4%. To put the result in perspective, the average standard deviation of the loan amount within a syndication is \$15 millions or 27.2% of the average loan amount. Hence, the effect of risk-weight explain roughly 9% of the variation of lending across banks in a syndication. While most of the identified effect of risk-weights on corporate lending comes from comparing lending from banks under the IRB approach with lending from banks under the standardized approach, we find that the variation of risk-weights across banks that have already introduced the IRB approach also affects corporate lending.
 
-We then investigate the mechanisms driving the effect. We find the effect of risk-weights on corporate lending to be stronger among small banks. We do not find evidence that too-big-too-fail and too-big-too-save status matter for how banks explore low risk-weights to increase lending. The results are also consistent with supervisors focusing on banks absolute size, instead of their systemic size, when deciding to allocate resources to validate banks’ risk models. Overall, the estimated coefficient on the interaction between size and risk-weights suggest incentives that relies on the ability of banks to manipulate their risk models. Supervisors are more likely to exert higher effort to evaluate large banks risk models [@eisenbach2016economics] given the systemic risk from their failure. Higher scrutiny translates in lower scope for banks to manipulate risk measures and, consequently, reducing the sensitivity of lending to risk-weights. 
-
-To further test the manipulation hypothesis, we study the interaction of the effect with variables that measure the degree of supervisory scrutiny. In all of the estimations, we find that higher supervisory scrutiny decreases the effect of risk-weight on lending, suggesting that, if allowed, banks manipulate risk-weights to gain an advantage in the corporate lending market. The results also corroborates to recent findings that monetary policy and bank supervision tasks tend to complement each other, resulting in less scope for strategic modeling.
-
-Finally, we study the effect of risk-weights on bank-level outcomes. We do not find an association between riskiness or profitability and risk-weights. Conversely, we find that lower risk-weights decrease the standard deviation of total assets. We also find lower risk-weights to be associated with higher leverage ratios, more assets, and more equity. Taken together, the results suggests that banks use the possibility to lower their risk-weights to expand their balance sheet not only by increasing their assets but also their equity. Therefore, banks with more leeway to manipulate risk-weights can increase their market-share in the corporate lending market without incurring higher risks.     
+We then investigate the mechanisms driving the effect. We find the effect of risk-weights on corporate lending to be stronger among small, and more profitable banks and weaker for banks with lower NPL ratios and for banks experiencing a fall in their capital ratios. We also find evidence that both too-big-too-fail and too-big-too-save status matter for how banks explore low risk-weights to increase lending, with the first reinforcing and the second mitigating the effect. The results are also consistent with supervisors focusing on banks absolute size, instead of their systemic size, when deciding to allocate resources to validate banks’ risk models. Overall, the estimated interactions suggest incentives that relies on the ability of banks to manipulate their risk models. To further test the manipulation hypothesis, we study the interaction of the effect with variables that measure the degree of supervisory scrutiny. In all of the estimations, we find that higher supervisory scrutiny decreases the effect of risk-weight on lending, suggesting that, if allowed, banks manipulate risk-weights to gain an advantage in the corporate lending market. The results also corroborates to recent findings that monetary policy and bank supervision tasks tend to complement each other, resulting in less scope for strategic modeling.     
 
 This papers contributes to two strands of literature. First, our paper is related to the literature examining the effect of capital requirements on bank lending. Several papers exploit changes in bank-specific capital requirements [@aiyar2014international; @imbierowicz2018time; @de2020bank]. @aiyar2014international study the cross-border lending market and find a substantial negative impact of capital requirements on bank lending. However, they rely only on cross-border lending from the UK and have only lending information aggregated at the borrowers' country level.   Other studies use exogenous shocks on capital requirements to identify the effect on bank lending [@peek1997international; @behn2016procyclical; @cappelletti2019impact; @fang2020bank; @fraisse2020real]. Our paper is closely related to @fraisse2020real who exploit variation in capital requirements across banks and borrowers due to the use of internal risk models. While they also find a negative effect of higher capital requirements on bank lending, different from our evidence, they argue that strategic modeling is not a driver of their results. Moreover, our international setting allow us to use the adoption of Basel II as an instrument and improve the identification of the effect. Although @fang2020bank find a small effect of capital requirements on bank lending, similar to our results, they show that the impact of capital requirements varies with economic conditions and bank characteristics. Overall, our contribution to this literature is the identification of a negative effect of risk-weights on bank credit supply to corporations in an international setting. Different from the effect of a capital requirement shock, which can be temporary - if, with time, banks increase lending by raising equity-, the identified effect of risk-weights suggest a more permanent impact on lending since raising equity does not change the rate at which banks have to hold capital for each asset.      
 
@@ -133,7 +129,7 @@ Finally, for balance sheet information of banks, we use the Bureau van Dijk's Ba
 
 Summary statistics are shown in Table \ref{tab:summary}. All variables from the Dealscan and Bankscope datasets are winsorized at 1% and 99%. Our dependent variable is the natural logarithm of the dollar amount of a bank's share in a syndicated loan ($\text{Log loan}_{l,i}$). The loans in our sample are distributed around 57 million dollars ranging from 341 thousand dollars to 382 million dollars. The main variable of interest, the corporate portfolio risk-weight ($\text{RW}_{i,t}$), averages 0.76 ranging from 0.07 to 1.03. In one model specification, we replace the risk-weight variable for a dummy variable that equals one for the years banks adopted the IRB approach. A little more than half of our sample is of banks using the standardize approach. These observations are either from IRB banks that had not yet adopted the IRB approach or from banks that never adopted it between 2001 and 2018. The instrument is a dummy variable that takes the value of one for the years since the introduction of the Basel II accord in the home country of the lender ($\text{Basel II}_{c,t}$). Information on the introduction of Basel II comes from @cerutti2018changes.\footnote{For the United Stats, we consider 2014 as the year of Basel "introduction" because this was the year the first american banks exit the parallel run and were allowed to use the IRB approach.} 
 
-In the empirical analysis, we also include a range of country and bank control variables. To control for the economic environment, we include $\text{GDP growth rate}_{c,t}$, which is the real GDP annual growth rate for the lender's home country. Several papers provide evidence of the procyclical nature of both lending and risk-weights. Following the findings of @demirgucc2020foreign that monetary policy impacts cross-border lending, we include $\text{Policy rate}_{c,t}$, the policy rate of the lender's home country. At the bank-level, our measure of size is the natural logarithm of the dollar amount of a bank's total asset ($\text{Log assets}_{i,t}$). The expectation of the effect of size on lending is unambiguous: large banks should lend more. The effect on risk-weights is ambiguous thou. On the one hand, large banks could benefit from a large pool of human and technical resources to develop risk models in their favor, in other words, models that result in lower risk-weights. On the other hands, because they are large, the supervisor authorities could dedicate more resources to evaluate and approve the models of large banks, hence, reducing the scope for manipulation. To capture differences in the balance-sheet structure we include two variables. On the liabilities side, $\text{Deposit ratio}_{i,t}$ is the ratio of total customer deposits to total asset. Because of lower market discipline from insured deposit markets, banks with a larger share of funding from deposits could have stronger incentives to manipulate their risk-weights. On the asset side, $\text{Loans ratio}_{i,t}$ is the ratio of gross loans to total assets. We expect banks specialized in the credit market to lend more and also to have higher risk-weights, as specialized banks could be more inclined to take risks in the credit market. Lastly, to control for the type of bank activity, we include $\text{Net interest income}_{i,t}$, the ratio of net interest income to operating income. A higher share of interest revenue should be associated to specialization in lending and, again, banks specialized in the credit market should lend more and take more risk in this market (and consequently, charge a higher average interest rate). Finally, we include $\text{Leverage ratio}_{i,t}$, the ratio of book equity to total assets. According to @blum2008basel, the incentives to under-report portfolio risk are particularly strong among weakly capitalized banks.   
+In the empirical analysis, we also include a range of country and bank control variables. To control for the economic environment, we include $\text{GDP growth rate}_{c,t}$, which is the real GDP annual growth rate for the lender's home country. Several papers provide evidence of the procyclical nature of both lending and risk-weights. Following the findings of @demirgucc2017foreign that monetary policy impacts cross-border lending, we include $\text{Policy rate}_{c,t}$, the policy rate of the lender's home country. At the bank-level, our measure of size is the natural logarithm of the dollar amount of a bank's total asset ($\text{Log assets}_{i,t}$). The expectation of the effect of size on lending is unambiguous: large banks should lend more. The effect on risk-weights is ambiguous thou. On the one hand, large banks could benefit from a large pool of human and technical resources to develop risk models in their favor, in other words, models that result in lower risk-weights. On the other hands, because they are large, the supervisor authorities could dedicate more resources to evaluate and approve the models of large banks, hence, reducing the scope for manipulation. To capture differences in the balance-sheet structure we include two variables. On the liabilities side, $\text{Deposit ratio}_{i,t}$ is the ratio of total customer deposits to total asset. Because of lower market discipline from insured deposit markets, banks with a larger share of funding from deposits could have stronger incentives to manipulate their risk-weights. On the asset side, $\text{Loans ratio}_{i,t}$ is the ratio of gross loans to total assets. We expect banks specialized in the credit market to lend more and also to have higher risk-weights, as specialized banks could be more inclined to take risks in the credit market. Lastly, to control for the type of bank activity, we include $\text{Net interest income}_{i,t}$, the ratio of net interest income to operating income. A higher share of interest revenue should be associated to specialization in lending and, again, banks specialized in the credit market should lend more and take more risk in this market (and consequently, charge a higher average interest rate). We describe the expected effect, and the interaction with the risk-weight for the remaining variables throughout the result section.    
 
 \subsection{Corporate Portfolio Risk-weights} \label{sec:rw}
 
@@ -143,9 +139,9 @@ Figure \ref{fig:alldata} shows the evolution in time of corporate portfolio risk
 
 Figure \ref{fig:betweenwithin} provides an example that shows that risk-weights differ among banks within a country. Although the average risk-weight of French and Canadian banks are very similar, the risk-weight variance among Canadian banks is much larger than the variance among French banks. This pattern persists from the time the IRB approach was introduced, mostly in 2008, to the end of the sample in 2018. The differences in variance across countries suggest that banks' risk-weights are not overwhelmed by a home-bias riskiness but might reflect, among other, different risk-preferences, risk modeling choices, and supervisory standards.         
 
-Figure \ref{fig:alldata} also shows the evolution of the average corporate portfolio risk-weights for the banks in the sample. The downward trend in the average risk-weight is partly explained by the banks introducing the IRB approach, which, for the most part, results in lower risk-weights than the standardized approach. Figure \ref{fig:introyear} shows the number of banks in our sample that have introduced the IRB approach between 2007 and 2018. Most banks adopted the IRB approach in 2008, but in every year since 2007 there is at least one bank that had adopted the IRB approach. The timing of IRB approach adoption varies somewhat within a country, being Italy the most extreme case where banks have introduced the IRB approach in 4 different years (see Figure \ref{fig:introwithin}). There is also some variation between countries, especially when comparing the American banks to others, as the former could only use the IRB approach for calculating their capital requirements from 2014 onward (see Figure \ref{fig:introbetween}). The impact of the IRB adoption on the average trend is shown in figure \ref{fig:irb_intro}. In the left-hand side panel, we replace the bank-year observations after the introduction of the IRB approach for the risk-weight value at the year the IRB approach was introduced for that bank. Because we remove the within bank variation, the downward trend in the left-hand side panel of Figure \ref{fig:irb_intro} is only the results of changes in the composition between banks that have and have not adopted the IRB approach.   
+Figure \ref{fig:alldata} also shows the evolution of the average corporate portfolio risk-weights for the banks in the sample. The downward trend in the average risk-weight is partly explained by the banks introducing the IRB approach, which, for the most part, results in lower risk-weights than the standardized approach. Figure \ref{fig:introyear} shows the number of banks in our sample that have introduced the IRB approach between 2007 and 2018. Most banks adopted the IRB approach in 2008, but in every year since 2007 there is at least one bank that had adopted the IRB approach. The timing of IRB approach adoption varies somewhat within a country, being Italy the most extreme case where banks have introduced the IRB approach in 4 different years (see Figure \ref{fig:introwithin}). There is also some variation between countries, especially when comparing the American banks to others, as the former could only use the IRB approach for calculating their capital requirements from 2014 onward (see Figure \ref{fig:introbetween}). The impact of the IRB adoption on the average trend is shown in figure \ref{fig:irb_intro}. We replace the bank-year observations after the introduction of the IRB approach for the risk-weight value at the year the IRB approach was introduced for that bank. Because we remove the within bank variation, the downward trend in figure \ref{fig:irb_intro} is only the results of changes in the composition between banks that have and have not adopted the IRB approach.   
 
-The right-hand side panel of Figure \ref{fig:irb_intro} shows that within bank trend also contributes, albeit marginally, to the aggregate downward trend shown in Figure \ref{fig:alldata}. In this figure, we remove from the bank-year observations after the introduction of the IRB approach the risk-weight change at the year of IRB introduction. Therefore, the downward trend in the right-hand side panel of Figure \ref{fig:irb_intro} is only the results of within bank risk-weight changes once the IRB has been introduced. It is worth noting, that the downward trend is not a common feature to all banks or countries. Figure \ref{fig:trend} shows that, at the time of introduction, risk-weights for Swiss banks were lower than for their Swedish peers, however, an upward trend for Swiss banks in recent years led to the average risk-weight in Swiss corporate portfolio being higher than the respective Swedish average in 2018.
+Figure \ref{fig:irb_var} shows that within bank trend also contributes, albeit marginally, to the aggregate downward trend shown in figure \ref{fig:alldata}. In this figure, we remove from the bank-year observations after the introduction of the IRB approach the risk-weight change at the year of IRB introduction. Therefore, the downward trend in figure \ref{fig:irb_var}is only the results of within bank risk-weight changes once the IRB has been introduced. It is worth noting, that the downward trend is not a common feature to all banks or countries. Figure \ref{fig:trend} shows that, at the time of introduction, risk-weights for Swiss banks were lower than for their Swedish peers, however, an upward trend for Swiss banks in recent years led to the average risk-weight in Swiss corporate portfolio being higher than the respective Swedish average in 2018.
 
 To summarize, risk-weights for corporate portfolio differ significantly across banks, and across countries. The downward trend is mostly explained by the introduction the IRB approach although risk-weights have also decreased since banks introduced the IRB approach. 
 
@@ -180,7 +176,9 @@ Columns (2) and (3) show, respectively, the first and second stages of our instr
 
 Our variable of interest, the average risk-weight, is a proxy for the actual capital charge on banks for the new lending. For the purpose of better proxying the actual risk-weights, we collect the average risk-weight from banks' corporate portfolio from their pillar-III reports. But the average risk-weight may still reflect other bank characteristics or the economic situation in their country that may also be the cause of their lending choices.  
 
-The result that risk-weights are negatively associated to lending remains unaltered after including several control variables. We start by including two country level control variables, the real GDP growth rate and the policy rate, and four bank level variables, the logarithm of the total asset, the deposit ratio, the loans ratio, and the net interest income to operating income. The effect on lending of a one standard deviation change in risk-weight, implied by the coefficient in column (5), decreases to 2.4% relative to the 2.8% implied by column (3). The effect of risk-weight is only smaller than the effect of size (12.9%) and the loans ratio (4.4%). The coefficient is still statistically significant, albeit only at the 10% level. 
+The result that risk-weights are negatively associated to lending remains unaltered after including several control variables. We start by including two country level control variables, the real GDP growth rate and the policy rate, and four bank level variables, the logarithm of the total asset, the deposit ratio, the loans ratio, and the net interest income to operating income. The effect on lending of a one standard deviation change in risk-weight, implied by the coefficient in column (5), decreases to 2.4% relative to the 2.8% implied by column (3). The effect of risk-weight is only smaller than the effect of size (12.9%) and the loans ratio (4.4%). The coefficient is still statistically significant, albeit only at the 10% level. The inclusion of further controls - the ROA, the NPL ratio, and the capital ratio - increases fourfold the magnitude of the coefficient on risk-weight but removes the statistical significance. In Section \ref{sec:sheet}, we study if the effect of risk-weight is heterogeneous with respect to the variables included in column (6).
+
+Interestingly, the adjusted $R^2$ remains virtually unchanged at 84.6% throughout the four regressions on loans volume. This suggests that most of the variation of lending comes from unobservable banks and borrowers characteristics. Notably, Table \ref{tab:fe} of the Appendix \ref{sec:appendixa} shows that the $R^2$ of a regression including only the risk-weight as regressor and loan fixed effect is 83.0%, highlighting the importance of exploring variation within a syndication to control for unobservable variables, such as, the borrower's credit demand.
 
 Taken together, the results in Table \ref{tab:main} support the hypothesis banks with lower risk-weights can lend more. Next, we investigate if the effect is driven by the one time introduction of the IRB approach, which decreased risk-weights substantially, or by the differences in risk-weights across banks.
 
@@ -194,25 +192,7 @@ In column (3) we interact the risk-weight variable with dummies for the time sin
 
 To summarize, the evidence in Table \ref{tab:time} shows that most of the effect of risk-weights on corporate lending comes from comparing banks under the IRB approach with banks under the standardized approach. This is not surprising giving the immediate impact of the IRB introduction on risk-weights, as shown in Figures \ref{fig:alldata}, \ref{fig:irb_intro}, and \ref{fig:irb_var}. Table \ref{tab:time} also shows that variation of risk-weights across banks that have already introduced the IRB approach also affect corporate lending. In the following sections, we explore several potential mechanisms for why and how banks can use lower risk-weights to gain a competitive advantage in lending to corporations.
 
-\subsection{Size, Too big to fail, and Too big to save} \label{sec:tbtf}
-
-In Table \ref{tab:size}, we study whether the size of banks can influence the effect of risk-weights on lending. Again, all regressions included bank and loan fixed effects and the control variables from column (5) in Table \ref{tab:main}, and we instrument the risk-weight variable with the Basel II dummy. Column (1) shows that the effect of risk-weight on lending is smaller for large banks. This result contradicts our expectation that large banks would have an incentive to be under-capitalized to explore the gains from their too-big-too-fail (TBTF) status. However, given the systemic risk from their failure, supervisors are more likely to exert higher effort to evaluate large banks risk models [@eisenbach2016economics]. Higher scrutiny translates in lower scope for banks to manipulate risk measures and, consequently, reducing the sensitivity of lending to risk-weights. 
-
-The positive coefficient on the logarithm of the total assets in column (2) is consistent with the incentives associated to the TBTF status. Banks may want to increase their size to benefit from the implicit guarantee from governments associated to the TBTF status. The negative coefficient on the square of the logarithm of total assets suggests that the effect is decreasing at the margin, in line with banks perceiving the risk of reaching a TBTS status. However, neither the TBTF nor the TBTS status seem to influence the effect of risk-weights on lending. First, as in column (1), the coefficient on the interaction between risk-weights and the logarithm of the total assets is positive, contradicting the expectations in line with the TBTF motives. Second, the coefficient on the interaction between risk-weights and the square of the logarithm of the total assets is statistically insignificant
-
-Following @demirgucc2013banks, we also include the ratio of banks total assets to their home country's GDP as a measure of systemic size and its interaction with risk-weights in column (3). The logarithm of the total assets maintains the positive sign in both regressions, in line with the TBTF status, while the ratio of assets to GDP gets a negative sign, possibly capturing the disincentives associated with the TBTS status. Moreover, the interaction term is statistically insignificant, corroborating the evidence in column (2) of no impact of the TBTS on the effect of risk-weights on lending. Column (4) shows that once we remove the logarithm of the total assets, both the linear and quadratic terms of the ratio of assets to GDP take the sign as in column (2), in other words, the first capture the effect of TBTF status and the second of TBTS on lending. However, differently from column (2) neither of the interaction terms in column (4) is statistically significant.  
-
-Overall, the results in Table \ref{tab:size} suggest neither TBTF and TBTS status matter for how banks explore low risk-weights to increase lending. However, the results are consistent with supervisors focusing on banks absolute size, instead of their systemic size, when deciding to allocate resources to validate banks' risk models.  
-
-\subsection{Supervisory Scrutiny} \label{sec:supervision}
-
-The analysis so far has suggested a particularly important role of the degree of supervision scrutiny. The strength of the effect of risk-weights on lending appears to depend on how much banks can manipulate their risk-weights.  Therefore, stronger supervision scrutiny should curtail banks from modeling credit risk opportunistically.  
-
-We use three questions from the World Bank’s Bank Regulation and Supervision Survey to construct measures of the degree of supervisory scrutiny. First, the logarithm of the number of professional supervisors is our measure of supervision capacity. Second, the frequency of on-site inspections conducted in large and medium size banks is used to measure effort. Third, we use a dummy variable that takes one if the central bank is a supervisor. The effect of the central bank as supervisor is ambiguous. On the one hand, monetary policy and bank supervision could complement each other because information from each task can be more easily shared [@peek1999bank] and financial stability concerns can lead the central bank as supervisor to push for reduced risk-taking in the banking system [@altavilla2020banking]. On the other hand, @ioannidou2005does shows that when the Federal Reserve System tightens monetary policy, it becomes less strict in bank supervision, which suggests the existence of conflict in interest between the two tasks. To reduce the impact of reporting errors, for the first two measures, we use the average of the values from the last three rounds of the survey, and the most common value for the central bank as supervisor dummy variable. Therefore, we rely only on the variation across banks to identify the effect of supervision.        
-
-The results in Table \ref{tab:sup} are based on our benchmark specification in column (5) of Table \ref{tab:main}, augmented with the supervision variables and their respective interaction terms with the risk-weight. In columns (1) and (2) the coefficient on the interaction term is positive, consistent with the hypothesis that stronger supervision scrutiny reduces the ability of banks to manipulate their risk-weights and, consequently reducing the capacity banks have to lend. This evidence corroborates @kandrac2019effect who find that banks increased their risk-taking following a reduction in supervision. Finally, the positive coefficient on the interaction term in column (3) suggests monetary policy and bank supervision tend to complement each other. 
-
-\subsection{Bank-level Outcomes} \label{sec:sheet}
+\subsection{Solvency and Risk-taking} \label{sec:sheet}
 
 In this section, we study the effect of the interaction of the three variables included in column (6) of Table \ref{tab:main} with risk-weights on corporate lending. The objective is to check if these variables moderate the effect of risk-weight on lending and, therefore, uncovering the incentives and constrains for banks to take advantage of low risk-weights. 
 
@@ -221,6 +201,24 @@ Table \ref{tab:bank} reports the results when we interact, separately, the risk-
 Column (2) shows that the coefficient on risk-weight remains negative while its interaction with the NPL ratio is positive. Both coefficients are statistically significant. The result corroborates the evidence from column (1) since banks with higher levels of NPL are likely to be less profitable. A high NPL ratio may also reflect different levels of risk-taking among banks. Banks holding riskier portfolios may be less inclined to underprice the risk-weights on their portfolio because they may already want to have a capital ratio above the regulatory minimum. Lastly, banks with higher NPL ratios may be under stricter scrutiny from their supervisors, reducing the possibility to manipulate risk-weights [@eisenbach2016economics].
 
 The interpretation in the last paragraph suggests a important role of banks' capital position as a moderator of the effect of risk-weight on lending. For instance, according to @blum2008basel, the incentives to under-report portfolio risk are particularly strong among weakly capitalized banks. Columns (3) and (4) show that banks respond to changes in the capital ratio rather than to its level. In column (3), the coefficient on the capital ratio and its interaction with risk-weights are statistically insignificant. In column (4), the coefficient on the interaction between risk-weights and the change in the capital ratio is positive, suggesting that the incentive to use lower risk-weights to support lending is higher when capital ratios decrease.
+
+\subsection{Size, Too big to fail, and Too big to save} \label{sec:tbtf}
+
+In Table \ref{tab:size}, we study whether the size of banks can influence the effect of risk-weights on lending. Again, all regressions included bank and loan fixed effects and the control variables from column (5) in Table \ref{tab:main}, and we instrument the risk-weight variable with the Basel II dummy. Column (1) shows that the effect of risk-weight on lending is smaller for large banks. This result contradicts our expectation that large banks would have an incentive to be under-capitalized to explore the gains from their too-big-too-fail (TBTF) status. However, given the systemic risk from their failure, supervisors are more likely to exert higher effort to evaluate large banks risk models [@eisenbach2016economics]. Higher scrutiny translates in lower scope for banks to manipulate risk measures and, consequently, reducing the sensitivity of lending to risk-weights. 
+
+The positive coefficient on the logarithm of the total assets in column (2) is consistent with the incentives associated to the TBTF status. Banks may want to increase their size to benefit from the implicit guarantee from governments associated to the TBTF status. The negative coefficient on the square of the logarithm of total assets suggests that the effect is decreasing at the margin, in line with banks perceiving the risk of reaching a TBTS status. However, neither the TBTF nor the TBTS status seem to influence the effect of risk-weights on lending. First, as in column (1), the coefficient on the interaction between risk-weights and the logarithm of the total assets is positive, contradicting the expectations in line with the TBTF motives. Second, the coefficient on the interaction between risk-weights and the square of the logarithm of the total assets is statistically insignificant
+
+Following @demirgucc2013banks, we also include the ratio of banks total assets to their home country's GDP as a measure of systemic size and its interaction with risk-weights in column (3). The logarithm of the total assets maintains the positive sign in both regressions, in line with the TBTF status, while the ratio of assets to GDP gets a negative sign, possibly capturing the disincentives associated with the TBTS status. Moreover, the interaction term is statistically insignificant, corroborating the evidence in column (2) of no impact of the TBTS on the effect of risk-weights on lending. Column (4) shows that once we remove the logarithm of the total assets, both the linear and quadratic terms of the ratio of assets to GDP take the sign as in column (2), in other words, the first capture the effect of TBTF status and the second of TBTS on lending. However, differently from column (2) neither of the interaction terms in column (4) is statistically significant.  
+
+Finally, in column (5) we include the logarithm of the total assets, the ratio of assets to GDP, the interaction term between them, and their interactions with risk-weights. Now, both the coefficients of the logarithm of the total assets and the ratio of assets to GDP are positive, suggesting the incentives associated with the TBTF status, while the interaction between them takes the negative sign associated with the TBTS status. More importantly, while the interaction of the logarithm of the total assets with risk-weights maintain the positive sign, as in columns (1) and (2), the interaction of the ratio of assets to GDP with risk-weights is negative and the triple interaction among the three variables is positive. All coefficients are statistically significant at the 1% level. Overall, the results of column (5) suggest both TBTF and TBTS status matter for how banks explore low risk-weights to increase lending. The results are also consistent with supervisors focusing on banks absolute size, instead of their systemic size, when deciding to allocate resources to validate banks' risk models.  
+
+\subsection{Supervisory Scrutiny} \label{sec:supervision}
+
+The analysis so far has suggested a particularly important role of the degree of supervision scrutiny. The strength of the effect of risk-weights on lending appears to depend on how much banks can manipulate their risk-weights.  Therefore, stronger supervision scrutiny should curtail banks from modeling credit risk opportunistically.  
+
+We use three questions from the World Bank’s Bank Regulation and Supervision Survey to construct measures of the degree of supervisory scrutiny. First, the logarithm of the number of professional supervisors is our measure of supervision capacity. Second, the frequency of on-site inspections conducted in large and medium size banks is used to measure effort. Third, we use a dummy variable that takes one if the central bank is a supervisor. The effect of the central bank as supervisor is ambiguous. On the one hand, monetary policy and bank supervision could complement each other because information from each task can be more easily shared [@peek1999bank] and financial stability concerns can lead the central bank as supervisor to push for reduced risk-taking in the banking system [@altavilla2020banking]. On the other hand, @ioannidou2005does shows that when the Federal Reserve System tightens monetary policy, it becomes less strict in bank supervision, which suggests the existence of conflict in interest between the two tasks. To reduce the impact of reporting errors, for the first two measures, we use the average of the values from the last three rounds of the survey, and the most common value for the central bank as supervisor dummy variable. Therefore, we rely only on the variation across banks to identify the effect of supervision.        
+
+The results in Table \ref{tab:sup} are based on our benchmark specification in column (5) of Table \ref{tab:main}, augmented with the supervision variables and their respective interaction terms with the risk-weight. In columns (1) and (2) the coefficient on the interaction term is positive, consistent with the hypothesis that stronger supervision scrutiny reduces the ability of banks to manipulate their risk-weights and, consequently reducing the capacity banks have to lend. This evidence corroborates @kandrac2019effect who find that banks increased their risk-taking following a reduction in supervision. Finally, the positive coefficient on the interaction term in column (3) suggests monetary policy and bank supervision tend to complement each other.    
 
 
 \section{Conclusion and Discussion} \label{sec:conclusion}
@@ -244,7 +242,7 @@ all_data <-  "\\label{fig:alldata}The figure plots the evolution in time of corp
 
 ```
 
-```{r all_data, message=FALSE, warning=FALSE, fig.cap = all_data, fig.align = 'center', fig.height = 3.5, fig.width = 4.5}
+```{r, message=FALSE, warning=FALSE, fig.cap = all_data, fig.align = 'center', fig.height = 3.5, fig.width = 4.5}
 aux.data <- loan.data %>% 
   ungroup() %>%
   filter(bvdid %in% pillar3.data$bvdid,  between(year, 2001,2018), !is.na(lender_amount_musd)) %>% 
@@ -290,7 +288,7 @@ rw_level_histogram <-  "\\label{fig:rwhistogram}The figure plots the histogram a
 
 ```
 
-```{r rw_histogram, warning=FALSE, message=FALSE, fig.cap = rw_level_histogram, fig.align = 'center', fig.height = 3.5, fig.width = 4.5}
+```{r, warning=FALSE, message=FALSE, fig.cap = rw_level_histogram, fig.align = 'center', fig.height = 3.5, fig.width = 4.5}
 plt1 <- aux.data %>%
   filter(bvdid %in% pillar3.data$bvdid,  between(year, 2001,2018), !is.na(lender_amount_musd), IRB == 1) %>% 
   ggplot( mapping = aes(x = RW)) +
@@ -338,8 +336,8 @@ var_between_within<-  "\\label{fig:betweenwithin}The figure plots the evolution 
 
 ```
 
-```{r rw_examples, warning=FALSE, message=FALSE, fig.cap = var_between_within, fig.align = 'center', fig.height = 3, fig.width = 7.5}
- p1<- loan.data %>% 
+```{r, warning=FALSE, message=FALSE, fig.cap = var_between_within, fig.align = 'center', fig.height = 3.5, fig.width = 4.5}
+ loan.data %>% 
   filter(bvdid %in% pillar3.data$bvdid,  between(year, 2001, 2018), country_code_lender %in% c("FR", "CA")) %>% 
   distinct(bvdid, year, .keep_all = TRUE)%>%
   group_by(bvdid) %>%
@@ -351,72 +349,16 @@ var_between_within<-  "\\label{fig:betweenwithin}The figure plots the evolution 
  theme_bw()+
   scale_color_manual(labels = c("Canada", "France"), values=c("gray50","black"))+
   scale_linetype_manual(labels = c("Canada", "France"), values=c("solid", "longdash"))+
-  scale_y_continuous(limits =  c(0.1,1.05)) +
+#scale_y_continuous(expand = c(0,0)) +
    scale_x_continuous(expand = c(0,0)) +
   theme(
     legend.title = element_blank(),
     legend.background = element_blank(),
-    legend.position = c(0.25,0.12),
+    legend.position = c(0.15,0.15),
     plot.background = element_blank(),
   #  panel.grid.major = element_blank(),
     panel.grid.minor = element_blank()
-  )  +
-  labs(x = "Year")+
-   theme(text = element_text(size=9))
-
- p2<- loan.data %>% 
-  filter(bvdid %in% pillar3.data$bvdid,  between(year, 2001, 2018), country_code_lender %in% c("US", "DE")) %>% 
-  distinct(bvdid, year, .keep_all = TRUE)%>%
-  group_by(bvdid) %>%
-  mutate(aux.year = sum(year))%>%
-  filter(aux.year == sum(seq(2001,2018,1))) %>%
-  ggplot(mapping = aes(y = RW, x = year, linetype = country_code_lender, color = country_code_lender,
-                       group = interaction(country_code_lender, bank_name))) +
-  geom_line()+
- theme_bw()+
-  scale_color_manual(labels = c("Germany", "United States"), values=c("gray50","black"))+
-  scale_linetype_manual(labels = c("Germany", "United States"), values=c("solid", "longdash"))+
- scale_y_continuous(limits =  c(0.1,1.05)) +
-   scale_x_continuous(expand = c(0,0)) +
-  theme(
-    legend.title = element_blank(),
-    legend.background = element_blank(),
-    legend.position =  c(0.25,0.12),
-    plot.background = element_blank(),
-  #  panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank()
-  ) +
-  labs(x = "Year")+
-   theme(text = element_text(size=9))
-
-  p3<- loan.data %>% 
-  filter(bvdid %in% pillar3.data$bvdid,  between(year, 2001, 2018), country_code_lender %in% c("CH", "SE")) %>% 
-  distinct(bvdid, year, .keep_all = TRUE)%>%
-  group_by(bvdid) %>%
-  mutate(aux.year = sum(year))%>%
-  filter(aux.year == sum(seq(2001,2018,1))) %>%
-  ggplot(mapping = aes(y = RW, x = year, linetype = country_code_lender, color = country_code_lender,
-                       group = interaction(country_code_lender, bank_name))) +
-  geom_line()+
- theme_bw()+
-  scale_color_manual(labels = c("Switzerland", "Sweden"), values=c("gray50","black"))+
-  scale_linetype_manual(labels = c("Switzerland", "Sweden"), values=c("solid", "longdash"))+
- scale_y_continuous(limits =  c(0.1,1.05)) +
-   scale_x_continuous(expand = c(0,0)) +
-  theme(
-    legend.title = element_blank(),
-    legend.background = element_blank(),
-    legend.position =  c(0.25,0.12),
-    plot.background = element_blank(),
-  #  panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank()
-  ) +
-  labs(x = "Year") +
-    theme(text = element_text(size=9))
-  
-  cowplot::plot_grid(p1, p2, p3, 
-                   ncol = 3, 
-                   align = 'v', axis = 'lr') 
+  ) 
 
 ```
 
@@ -425,7 +367,7 @@ intro_by_year <-  "\\label{fig:introyear}The figure plots the distribution in ti
 
 ```
 
-```{r intro_irb, warning=FALSE, message=FALSE, fig.cap = intro_by_year, fig.align = 'center', fig.height = 3.5, fig.width = 4.5}
+```{r, warning=FALSE, message=FALSE, fig.cap = intro_by_year, fig.align = 'center', fig.height = 3.5, fig.width = 4.5}
 
 aux.data %>% 
   select(bvdid, bank_name, year, IRB, change) %>%
@@ -449,65 +391,20 @@ intro_within<-  "\\label{fig:introwithin}The figure plots the evolution in time 
 
 ```
 
-```{r facet_all, warning=FALSE, message=FALSE, fig.cap = intro_within, fig.align = 'center', fig.height = 4, fig.width = 7}
+```{r, warning=FALSE, message=FALSE, fig.cap = intro_within, fig.align = 'center', fig.height = 3.5, fig.width = 4.5}
  loan.data %>% 
-  filter(
-    bvdid %in% pillar3.data$bvdid,
-    !is.na(lender_amount_musd),
-         between(year, 2001, 2018)
-        # , country_code_lender %in% c("FR")
-         ) %>% 
+  filter(bvdid %in% pillar3.data$bvdid,  between(year, 2001, 2018), country_code_lender %in% c("IT")) %>% 
   distinct(bvdid, year, .keep_all = TRUE)%>%
   group_by(bvdid) %>%
   mutate(aux.year = sum(year))%>%
   filter(aux.year == sum(seq(2001,2018,1))) %>%
-  ggplot(mapping = aes(y = RW, x = year, 
-                       #linetype = bank_name, color = bank_name, 
-                       #group = interaction(country_code_lender, bank_name)
-                       )) +
-  geom_line(color = "gray70", aes(group = bank_name)) +
- # geom_line(
-   # size = 1
- #   )+
- theme_bw()+
-  #scale_color_grey(start = 0, end = 0.6)+
-   scale_x_continuous(expand = c(0,0)) +
-  theme(
-    legend.title = element_blank(),
-    legend.background = element_blank(),
-    legend.position = c(0.22,0.27),
-    plot.background = element_blank(),
-  #  panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank()
-  ) +
-  labs(x = "Year")+
-  facet_wrap(~country_name, ncol = 5)
-
-```
-
-
-```{r, eval=FALSE, warning=FALSE, message=FALSE, fig.cap = intro_within, fig.align = 'center', fig.height = 6, fig.width = 8}
- loan.data %>% 
-  filter(
-    bvdid %in% pillar3.data$bvdid,
-    !is.na(lender_amount_musd),
-         between(year, 2001, 2018)
-         , country_code_lender %in% c("SE")
-         ) %>% 
-  distinct(bvdid, year, .keep_all = TRUE)%>%
-  group_by(bvdid) %>%
-  mutate(aux.year = sum(year))%>%
-  filter(aux.year == sum(seq(2001,2018,1))) %>%
-  ggplot(mapping = aes(y = RW, x = year, 
-                       linetype = bank_name, color = bank_name, 
-                       group = interaction(country_code_lender, bank_name)
-                       )) +
-  
+  ggplot(mapping = aes(y = RW, x = year, linetype = bank_name, color = bank_name, 
+                       group = interaction(country_code_lender, bank_name))) +
   geom_line(
-    size = 1
+   # size = 1
     )+
  theme_bw()+
-  #scale_color_grey(start = 0, end = 0.6)+
+  scale_color_grey(start = 0, end = 0.6)+
    scale_x_continuous(expand = c(0,0)) +
   theme(
     legend.title = element_blank(),
@@ -520,6 +417,7 @@ intro_within<-  "\\label{fig:introwithin}The figure plots the evolution in time 
   labs(x = "Year")
 
 ```
+
 ```{r, results="hide"}
 intro_between<-  "\\label{fig:introbetween}The figure plots the evolution in time of corporate portfolio risk-weights of German banks (grey solid lines) and American banks (black dashed lines)."
 
@@ -555,32 +453,61 @@ intro_between<-  "\\label{fig:introbetween}The figure plots the evolution in tim
 
 
 ```{r, results="hide"}
-irb_intro <-  "\\label{fig:irb_intro}The left-hand side panel plots the impact on risk-weights of the IRB introduction for every bank (grey lines) and the average corporate portfolio risk-weight (black line) in the sample. The right-hand side panel plots the evolution in time of corporate portfolio risk-weights removing the initial impact of the IRB introduction for every bank (grey lines) and the average corporate portfolio risk-weight (black line) in the sample."
+irb_intro <-  "\\label{fig:irb_intro}The figure plots the impact on risk-weights of the IRB introduction for every bank (grey lines) and the average corporate portfolio risk-weight (black line) in the sample."
 
 ```
 
-```{r rw_variation, message=FALSE, warning=FALSE, fig.cap = irb_intro, fig.align = 'center', fig.height = 3.5, fig.width = 5}
-
-aux.data.2 <-aux.data %>%select(RW.var, RW.aux, year, bank_name)%>%
-  pivot_longer(cols = contains("RW."), names_to = "type", values_to="values") 
-
-  ggplot(data = aux.data.2, mapping = aes(y = values, x = year)) +
-  geom_line(color = "gray70", aes(group = bank_name), size = 0.5) +
-   stat_summary(fun=mean, aes(group=1), geom="line", colour="black", size = 1)+
+```{r, message=FALSE, warning=FALSE, fig.cap = irb_intro, fig.align = 'center', fig.height = 3.5, fig.width = 4.5}
+aux  = ""
+aux.data %>%
+  ggplot(data = filter(aux.data, country_code_lender != aux ), mapping = aes(y = RW.aux, x = year)) +
+  geom_line(color = "gray70", aes(group = bank_name)) +
+   stat_summary(fun=mean, aes(group=1), geom="line", colour="black", size = 1.1)+
+  geom_line(data = filter(aux.data, country_code_lender == aux ), 
+            color = "black", linetype = 2, size = 1, aes(group = bank_name))+
+  
   theme_bw() +
 #  scale_y_continuous(expand = c(0,0)) +
    scale_x_continuous(expand = c(0,0)) +
   theme(
     plot.background = element_blank(),
     panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    strip.background = element_blank(),
-  strip.text.x = element_blank()
+    panel.grid.minor = element_blank()
   ) +
-  labs(x = "Year", y= "RW")+
-  facet_wrap(~type)
+  labs(x = "Year", y= "RW")
 
 ```
+
+```{r, results="hide"}
+irb_var <-  "\\label{fig:irb_var}The figure plots the evolution in time of corporate portfolio risk-weights removing the initial impact of the IRB introduction for every bank (grey lines) and the average corporate portfolio risk-weight (black line) in the sample."
+
+```
+
+```{r, message=FALSE, warning=FALSE, fig.cap = irb_var, fig.align = 'center', fig.height = 3.5, fig.width = 4.5}
+aux  = ""
+aux.data %>%
+  ggplot(data = filter(aux.data, country_code_lender != aux ), mapping = aes(y = RW.var, x = year)) +
+  geom_line(color = "gray70", aes(group = bank_name)) +
+   stat_summary(fun=mean, aes(group=1), geom="line", colour="black", size = 1.1)+
+  geom_line(data = filter(aux.data, country_code_lender == aux ), 
+            color = "black", linetype = 2, size = 1, aes(group = bank_name))+
+  
+  theme_bw() +
+#  scale_y_continuous(expand = c(0,0)) +
+   scale_x_continuous(expand = c(0,0)) +
+  theme(
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) +
+  labs(x = "Year", y= "RW")
+
+```
+
+
+
+
+
 
 
 
@@ -643,17 +570,16 @@ test2 <- loan.data %>%
 \label{tab:summary}
 \footnotesize
 \begin{tabular}{@{\extracolsep{1pt}}lccccc}
-\multicolumn{6}{c}{\parbox[t]{16cm}{The table shows summary statistics for the sample used in the paper. Our data cover the 2001-2018 period. All bank and loan level variables are winsorized at 1\% and 99\%}} \\
+\multicolumn{6}{c}{\parbox[t]{15cm}{The table shows summary statistics for the sample used in the paper. Our data cover the 2001-2018 period. All bank and loan level variables are winsorized at 1\% and 99\%}} \\
 \end{tabular}
 
 ```{r summary1, eval=TRUE, fig.height = 10, fig.width = 7, results="asis",out.width = "1\\textwidth"}
 loan.data %>%
-        filter(year > 2000, country_name_borrower != country_name,IRB.indicator ==1) %>% 
+        filter(year > 2000, country_name_borrower != country_name) %>% 
   arrange(mean.RW_with_SA)%>%
   mutate(asset = totalassetsmillcu*exchangeratefromoriginalcurrencyusd/1000,
          number_supervisors = round(number_supervisors,0),
-         log.number = log(number_supervisors),
-         log.leverage = log(leverage))%>%
+         log.number = log(number_supervisors))%>%
   select(
   lender_amount_musd,
   log.lender_amount,
@@ -664,18 +590,15 @@ loan.data %>%
   policy_rate,
   asset,
   log.asset,
-  log.equity,
   deposit.ratio,
   loans.ratio,
   NII.ratio,
   ROA,
   NPL.ratio,
   capital.ratio,
-  leverage,
-  log.leverage,
+  capital.ratio_gr,
   asset_share.gdp,
   number_supervisors,
-   supervisors_share.credit,
   log.number,
   freq_onsite,
   cb_supervisor
@@ -695,19 +618,16 @@ stargazer(header = FALSE, type="latex", single.row = TRUE, column.sep.width = "1
               "\\hspace{0.0cm}$\\text{Policy rate}_{c,t}$",
               "\\hspace{0.0cm}$\\text{Total assets (USD B)}_{i,t}$",
               "\\hspace{0.0cm}$\\text{Log assets}_{i,t}$",
-              "\\hspace{0.0cm}$\\text{Log equity}_{i,t}$",
               "\\hspace{0.0cm}$\\text{Deposit ratio}_{i,t}$",
               "\\hspace{0.0cm}$\\text{Loans ratio}_{i,t}$",
               "\\hspace{0.0cm}$\\text{NII ratio}_{i,t}$",
               "\\hspace{0.0cm}$\\text{ROA}_{i,t}$",
               "\\hspace{0.0cm}$\\text{NPL ratio}_{i,t}$",
               "\\hspace{0.0cm}$\\text{Capital ratio}_{i,t}$",
-              "\\hspace{0.0cm}$\\text{Leverage ratio}_{i,t}$",
-              "\\hspace{0.0cm}$\\text{Log leverage ratio}_{i,t}$",
+              "\\hspace{0.0cm}$\\Delta \\text{Capital ratio}_{i,t}$",
               "\\hspace{0.0cm}$\\text{Assets to GDP}_{c,t}$",
               "\\hspace{0.0cm}$\\text{Number of professional supervisors}_{c,t}$",
               "\\hspace{0.0cm}$\\text{Log number of professional supervisors}_{c,t}$",
-              "\\hspace{0.0cm}$\\text{Professional supervisors to bank credit}_{c,t}$",
               "\\hspace{0.0cm}$\\text{Frequency of onsite inspections}_{c,t}$",
               "\\hspace{0.0cm}$\\text{Central bank supervisor}_{c,t}$"
               ),
@@ -731,13 +651,13 @@ reg.list <- list()
 se.list <- list()
 F.test <- c()
 
-reg.list[[1]] <- felm(log.lender_amount ~ RW +gdp_growth+policy_rate+log.asset  +  deposit.ratio + loans.ratio + NII.ratio +leverage
+reg.list[[1]] <- felm(log.lender_amount ~ RW 
                       | as.factor(bvdid) + tranche_id  | 0 | tranche_id,
-                      data = filter(loan.data, country_name_borrower != country_name, year > 2000, IRB.indicator ==1))
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
 
-reg.list[[3]] <- felm(log.lender_amount ~  gdp_growth+policy_rate+log.asset  +  deposit.ratio + loans.ratio + NII.ratio +leverage
+reg.list[[3]] <- felm(log.lender_amount ~  1
                       | as.factor(bvdid) +  tranche_id | (RW ~ basel) | tranche_id,
-                      data = filter(loan.data, country_name_borrower != country_name, year > 2000,  IRB.indicator ==1))
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
 rownames(reg.list[[3]]$coefficients)[rownames(reg.list[[3]]$coefficients)=='`RW(fit)`']<-'RW'
 rownames(reg.list[[3]]$beta)[rownames(reg.list[[3]]$beta)=='`RW(fit)`']<-'RW'
 
@@ -745,6 +665,20 @@ reg.list[[2]] <- reg.list[[3]]$stage1
 F.test[2]<-round(summary(reg.list[[2]])$iv1fstat["F"],1)
 
 
+reg.list[[5]] <- felm(log.lender_amount ~  +gdp_growth+policy_rate+log.asset  +  deposit.ratio + loans.ratio + NII.ratio 
+                      | as.factor(bvdid) +  tranche_id | (RW ~ basel) | tranche_id,
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[5]]$coefficients)[rownames(reg.list[[5]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[5]]$beta)[rownames(reg.list[[5]]$beta)=='`RW(fit)`']<-'RW'
+
+reg.list[[4]] <- reg.list[[5]]$stage1
+F.test[4]<-round(summary(reg.list[[4]])$iv1fstat["F"],1)
+
+reg.list[[6]] <- felm(log.lender_amount ~  +gdp_growth+policy_rate+log.asset  +  deposit.ratio + loans.ratio + NII.ratio + ROA + NPL.ratio + capital.ratio
+                      | as.factor(bvdid) +  tranche_id | (RW ~ basel) | tranche_id,
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
+rownames(reg.list[[6]]$coefficients)[rownames(reg.list[[6]]$coefficients)=='`RW(fit)`']<-'RW'
+rownames(reg.list[[6]]$beta)[rownames(reg.list[[6]]$beta)=='`RW(fit)`']<-'RW'
 
 ```
 
@@ -763,7 +697,7 @@ ind.text <- c("$\\text{RW}_{i,t}$",
               "$\\text{Deposit ratio}_{i,t}$",
               "$\\text{Loans ratio}_{i,t}$",
               "$\\text{Net interest income}_{i,t}$",
-              "$\\text{Leverage ratio}_{i,t}$",
+              "$\\text{ROA}_{i,t}$",
               "$\\text{NPL ratio}_{i,t}$",
               "$\\text{Capital ratio}_{i,t}$")
 
@@ -778,10 +712,10 @@ fe.list <- list(c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list)
 stargazer(reg.list,
           title = "Risk-weights and Corporate Lending",
           table.layout = "n=c=d#-t-as-",
-          notes = "\\parbox[t]{10cm}{The table shows the effect of risk-weights on cross-border corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a syndicated loan. The main independent variable, $\\text{RW}_{i,t}$, is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. The instrumental variable, $\\text{Basel II}_{c,t}$, is a dummy variable that takes the value of one for the years since the introduction of the Basel II accord in the home country of the lender. $\\text{GDP growth rate}_{c,t}$ is the real GDP annual growth rate for the lender's home country. $\\text{Policy rate}_{c,t}$ is the policy rate of the lender's home country. $\\text{Log assets}_{i,t}$ is the natural logarithm of the dollar amount of a bank's total asset. $\\text{Deposit ratio}_{i,t}$ is the ratio of total customer deposits to total asset. $\\text{Loans ratio}_{i,t}$ is the ratio of gross loans to total assets. $\\text{Net interest income}_{i,t}$ is the ratio of net interest income to operating income. $\\text{Leverage ratio}_{i,t}$ is the ratio of book equity to total assets. All regressions include loan and bank fixed effects. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          notes = "\\parbox[t]{16cm}{The table shows the effect of risk-weights on cross-border corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a syndicated loan. The main independent variable, $\\text{RW}_{i,t}$, is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. The instrumental variable, $\\text{Basel II}_{c,t}$, is a dummy variable that takes the value of one for the years since the introduction of the Basel II accord in the home country of the lender. $\\text{GDP growth rate}_{c,t}$ is the real GDP annual growth rate for the lender's home country. $\\text{Policy rate}_{c,t}$ is the policy rate of the lender's home country. $\\text{Log assets}_{i,t}$ is the natural logarithm of the dollar amount of a bank's total asset. $\\text{Deposit ratio}_{i,t}$ is the ratio of total customer deposits to total asset. $\\text{Loans ratio}_{i,t}$ is the ratio of gross loans to total assets. $\\text{Net interest income}_{i,t}$ is the ratio of net interest income to operating income. $\\text{ROA}_{i,t}$ is the ratio of pre-tax income to total assets. $\\text{NPL ratio}_{i,t}$ is the ratio of non-performing loans to gross loans. $\\text{Capital ratio}_{i,t}$ is the ratio of regulatory capital to risk-weighted assets. All regressions include loan and bank fixed effects. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
           dep.var.labels   = dep.text,
           covariate.labels = ind.text,
-          order           = c(1, 9, seq(2,8)),
+          order           = c(1, 8, seq(2,7)),
           add.lines        = fe.list,
           #se               = se.list,
           keep.stat        = c("n","adj.rsq"),
@@ -795,7 +729,7 @@ stargazer(reg.list,
           column.sep.width = "-1.0pt",
           align            = TRUE,
           #no.space        = TRUE,
-          column.labels    = c("OLS", "IV", "IV 2", "IV 3" ),
+          column.labels    = c("OLS", "IV 1", "IV 2", "IV 3" ),
           column.separate  = c(1,2,2),
           #float.env        = "sidewaystable",
           type             = "latex"
@@ -821,7 +755,7 @@ stargazer(reg.list,
          fourth_IRB = ifelse(fourth_IRB==0 & lag(fourth_IRB) == 1, 1,fourth_IRB))%>%
   full_join(select(loan.data, -IRB), by = c("bvdid", "year")) %>%
   filter(country_name_borrower != country_name, year > 2000, IRB == 1) %>%
-  select(log.lender_amount, RW, gdp_growth, policy_rate, log.asset, deposit.ratio, loans.ratio, NII.ratio, leverage,
+  select(log.lender_amount, RW, gdp_growth, policy_rate, log.asset, deposit.ratio, loans.ratio, NII.ratio,
          contains("_IRB"), bvdid, year, IRB, tranche_id , basel, ROA, NPL.ratio) %>%
   mutate(aux1 = RW*intro_IRB,
          aux2 = RW*second_IRB,
@@ -854,20 +788,22 @@ reg.list <- list()
 se.list <- list()
 F.test <- c()
 
-reg.list[[1]] <-felm(log.lender_amount ~  gdp_growth+policy_rate+log.asset  +  deposit.ratio + loans.ratio + NII.ratio + leverage
+reg.list[[1]] <-felm(log.lender_amount ~  gdp_growth+policy_rate+log.asset  +  deposit.ratio + loans.ratio + NII.ratio 
                       | as.factor(bvdid) + tranche_id   | (IRB ~ basel)| tranche_id,
-                      data = filter(loan.data, country_name_borrower != country_name, year > 2000, IRB.indicator ==1))
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
 
 
-reg.list[[2]] <-felm(log.lender_amount ~  RW+gdp_growth+policy_rate+log.asset  +  deposit.ratio + loans.ratio + NII.ratio + leverage
+reg.list[[2]] <-felm(log.lender_amount ~  RW+gdp_growth+policy_rate+log.asset  +  deposit.ratio + loans.ratio + NII.ratio 
                       | as.factor(bvdid) + tranche_id   | 0 | tranche_id,
                       data = filter(loan.data, country_name_borrower != country_name, year > 2000, IRB == 1))
 
 
 
 reg.list[[3]] <- felm(log.lender_amount ~ aux1 + aux2 +aux3 + aux4+
-                        gdp_growth + policy_rate + log.asset+ deposit.ratio + loans.ratio + NII.ratio + leverage  
-                      | as.factor(bvdid)  + tranche_id  | 0 | tranche_id,
+                        gdp_growth + policy_rate + log.asset+ deposit.ratio + loans.ratio + NII.ratio  
+                      | as.factor(bvdid)  + tranche_id  |
+                  0 
+                  | tranche_id,
                       data = aux)
 
 
@@ -891,8 +827,7 @@ ind.text <- c("$\\text{IRB}_{i,t}$",
               "$\\text{Log asset}_{i,t}$",
               "$\\text{Deposit ratio}_{i,t}$",
               "$\\text{Loans ratio}_{i,t}$",
-              "$\\text{Net interest income}_{i,t}$",
-              "$\\text{Leverage ratio}_{i,t}$")
+              "$\\text{Net interest income}_{i,t}$")
 
 fe.list <- list(c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
                 c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))))
@@ -903,10 +838,10 @@ fe.list <- list(c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list)
 stargazer(reg.list,
           title = "IRB Introduction vs Risk-weight variation across banks",
           table.layout = "n=c=d#-t-as-",
-          notes = "\\parbox[t]{11.5cm}{The table shows the effect on cross-border corporate lending of the introduction of the IRB approach and of risk-weights once the IRB was introduced. The dependent variable is the logarithm of the amount lent by the bank in a syndicated loan. The main independent variable, $\\text{RW}_{i,t}$ is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. $\\text{IRB}_{i,t}$ is a dummy variable that takes the value of one for the years since the introduction of the IRB approach. Regression (1) is instrumented using $\\text{Basel II}_{c,t}$, which is a dummy variable that takes the value of one for the years since the introduction of the Basel II accord in the home country of the lender. $\\text{GDP growth rate}_{c,t}$ is the real GDP annual growth rate for the lender's home country. $\\text{Policy rate}_{c,t}$ is the policy rate of the lender's home country. $\\text{Log assets}_{i,t}$ is the natural logarithm of the dollar amount of a bank's total asset. $\\text{Deposit ratio}_{i,t}$ is the ratio of total customer deposits to total asset. $\\text{Loans ratio}_{i,t}$ is the ratio of gross loans to total assets. $\\text{Net interest income}_{i,t}$ is the ratio of net interest income to operating income. $\\text{Leverage ratio}_{i,t}$ is the ratio of book equity to total assets. All regressions include loan and bank fixed effects. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          notes = "\\parbox[t]{12cm}{The table shows the effect on cross-border corporate lending of the introduction of the IRB approach and of risk-weights once the IRB was introduced. The dependent variable is the logarithm of the amount lent by the bank in a syndicated loan. The main independent variable, $\\text{RW}_{i,t}$ is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. $\\text{IRB}_{i,t}$ is a dummy variable that takes the value of one for the years since the introduction of the IRB approach. Regression (1) is instrumented using $\\text{Basel II}_{c,t}$, which is a dummy variable that takes the value of one for the years since the introduction of the Basel II accord in the home country of the lender. $\\text{GDP growth rate}_{c,t}$ is the real GDP annual growth rate for the lender's home country. $\\text{Policy rate}_{c,t}$ is the policy rate of the lender's home country. $\\text{Log assets}_{i,t}$ is the natural logarithm of the dollar amount of a bank's total asset. $\\text{Deposit ratio}_{i,t}$ is the ratio of total customer deposits to total asset. $\\text{Loans ratio}_{i,t}$ is the ratio of gross loans to total assets. $\\text{Net interest income}_{i,t}$ is the ratio of net interest income to operating income. All regressions include loan and bank fixed effects. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
           dep.var.labels   = dep.text,
           covariate.labels = ind.text,
-          order           = c(13, seq(1,12)),
+          order           = c(12, seq(1,11)),
           add.lines        = fe.list,
           #se               = se.list,
           keep.stat        = c("n","adj.rsq"),
@@ -928,7 +863,117 @@ stargazer(reg.list,
 ```
 
 
+```{r bank_regressions, echo=FALSE}
 
+# Run the models
+reg.list <- list()
+se.list <- list()
+F.test.RW <- c()
+F.test.aux <- c()
+
+
+reg.list[[1]] <- felm(log.lender_amount ~  gdp_growth + policy_rate + log.asset+ deposit.ratio +
+                        loans.ratio + NII.ratio+ ROA  
+                      | as.factor(bvdid)  + tranche_id  |(RW | aux ~basel + basel:ROA) | tranche_id,
+                      data = filter(mutate(loan.data,       
+                                    ROA = ROA - mean(ROA, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux = RW*ROA), 
+                                    country_name_borrower != country_name, year > 2000))
+F.test.RW[1]<-round(reg.list[[1]]$stage1$iv1fstat$RW["F"],1)
+F.test.aux[1]<-round(reg.list[[1]]$stage1$iv1fstat$aux["F"],1)
+
+reg.list[[2]] <- felm(log.lender_amount ~   gdp_growth + policy_rate + log.asset+ deposit.ratio +
+                        loans.ratio + NII.ratio +NPL.ratio 
+                      | as.factor(bvdid)  + tranche_id  |(RW | aux2 ~basel + basel:NPL.ratio) | tranche_id,
+                      data = filter(mutate(loan.data,       
+                                    NPL.ratio = NPL.ratio - mean(NPL.ratio, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux2 = RW*NPL.ratio), 
+                                    country_name_borrower != country_name, year > 2000))
+F.test.RW[2]<-round(reg.list[[2]]$stage1$iv1fstat$RW["F"],1)
+F.test.aux[2]<-round(reg.list[[2]]$stage1$iv1fstat$aux2["F"],1)
+
+reg.list[[3]] <- felm(log.lender_amount ~   gdp_growth + policy_rate + log.asset+ deposit.ratio +
+                        loans.ratio + NII.ratio +capital.ratio
+                      | as.factor(bvdid)  + tranche_id  |(RW | aux3 ~basel + basel:capital.ratio) | tranche_id,
+                      data = filter(mutate(loan.data,       
+                                    capital.ratio = capital.ratio - mean(capital.ratio, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux3 = RW*capital.ratio), 
+                                    country_name_borrower != country_name, year > 2000))
+F.test.RW[3]<-round(reg.list[[3]]$stage1$iv1fstat$RW["F"],1)
+F.test.aux[3]<-round(reg.list[[3]]$stage1$iv1fstat$aux3["F"],1)
+
+
+reg.list[[4]] <- felm(log.lender_amount ~   gdp_growth + policy_rate + log.asset+ deposit.ratio +
+                        loans.ratio + NII.ratio +capital.ratio_gr
+                      | as.factor(bvdid)  + tranche_id  |(RW | aux4 ~basel + basel:capital.ratio_gr) | tranche_id,
+                      data = filter(mutate(loan.data,       
+                                    #capital.ratio = capital.ratio - mean(capital.ratio, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux4 = RW*capital.ratio_gr), 
+                                    country_name_borrower != country_name, year > 2000))
+F.test.RW[4]<-round(reg.list[[4]]$stage1$iv1fstat$RW["F"],1)
+F.test.aux[4]<-round(reg.list[[4]]$stage1$iv1fstat$aux4["F"],1)
+
+
+
+```
+
+
+```{r bank_aux, echo=FALSE}
+
+# Dependent variables
+dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+
+# Independent variables
+ind.text <- c(  "$\\text{RW}_{i,t}$", 
+                "$\\text{ROA}_{i,t}$", "$\\text{RW}_{i,t} \\times \\text{ROA}_{i,t}$",
+                "$\\text{NPL ratio}_{i,t}$", "$\\text{RW}_{i,t} \\times \\text{NPL ratio}_{i,t}$",
+                "$\\text{Capital ratio}_{i,t}$", "$\\text{RW}_{i,t} \\times \\text{Capital ratio}_{i,t}$",
+                "$\\Delta\\text{Capital ratio}_{i,t}$", "$\\text{RW}_{i,t} \\times \\Delta\\text{Capital ratio}_{i,t}$",
+                "$\\text{GDP growth rate}_{c,t}$", 
+                "$\\text{Policy rate}_{c,t}$",
+                "$\\text{Log asset}_{i,t}$",
+                "$\\text{Deposit ratio}_{i,t}$",
+                "$\\text{Loans ratio}_{i,t}$",
+                "$\\text{Net interest income}_{i,t}$")
+
+fe.list <- list(c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+                c("F-value (1st stage on RW)", F.test.RW))
+
+```
+
+```{r bank_table, eval=TRUE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+stargazer(reg.list,
+          title = "Performance, Risk-weights and Lending",
+          table.layout = "n=c=d#-t-as-",
+          notes = "\\parbox[t]{13cm}{The table shows the interaction between the effect of risk-weights and the effect of bank characteristics on cross-border corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a syndicated loan. The main independent variable, $\\text{RW}_{i,t}$, is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. In all regressions $\\text{RW}_{i,t}$ is instrumented using $\\text{Basel II}_{c,t}$, which is a dummy variable that takes the value of one for the years since the introduction of the Basel II accord in the home country of the lender. $\\text{GDP growth rate}_{c,t}$ is the real GDP annual growth rate for the lender's home country. $\\text{Policy rate}_{c,t}$ is the policy rate of the lender's home country. $\\text{Log assets}_{i,t}$ is the natural logarithm of the dollar amount of a bank's total asset. $\\text{Deposit ratio}_{i,t}$ is the ratio of total customer deposits to total asset. $\\text{Loans ratio}_{i,t}$ is the ratio of gross loans to total assets. $\\text{Net interest income}_{i,t}$ is the ratio of net interest income to operating income. $\\text{ROA}_{i,t}$ is the ratio of pre-tax income to total assets. $\\text{NPL ratio}_{i,t}$ is the ratio of non-performing loans to gross loans. $\\text{Capital ratio}_{i,t}$ and $\\Delta \\text{Capital ratio}_{i,t}$ are the level and yearly change, respectively, of ratio of regulatory capital to risk-weighted assets. All regressions include loan and bank fixed effects. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          dep.var.labels   = dep.text,
+          covariate.labels = ind.text,
+          #keep             = seq(7,11),
+          order            = c(11,7,12,8,13, 9, 14,10,15),
+          add.lines        = fe.list,
+          #se               = se.list,
+          keep.stat        = c("n","adj.rsq"),
+          header           = FALSE, 
+          font.size        = "scriptsize",
+          notes.label      = "",
+          notes.align      = "c", 
+          notes.append     = FALSE,
+          label            = "tab:bank",
+          style            = "qje",
+          column.sep.width = "-1.0pt",
+          align            = TRUE,
+          #no.space        = TRUE,
+          #column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
+          #column.separate  = c(1,1,1,1),
+          #float.env        = "sidewaystable",
+          type             = "latex"
+  )
+```
 
 
 
@@ -943,21 +988,21 @@ F.test.aux2 <- c()
 F.test.aux3 <- c()
 
 reg.list[[1]] <- felm(log.lender_amount ~ log.asset 
-                      + gdp_growth + policy_rate  + deposit.ratio + loans.ratio + NII.ratio +leverage
+                      + gdp_growth + policy_rate  + deposit.ratio + loans.ratio + NII.ratio 
                       | as.factor(bvdid)  + tranche_id  | 
                         (RW | aux1 ~ basel + basel:log.asset) | tranche_id,
                       data = filter(mutate(loan.data,      
                                     log.asset = log.asset - mean(log.asset, na.rm = TRUE),
                                     RW = RW - mean(RW, na.rm = TRUE),
                                     aux1 = RW*log.asset), 
-                                    country_name_borrower != country_name, year > 2000,  IRB.indicator ==1))
+                                    country_name_borrower != country_name, year > 2000))
 
 F.test.RW[1]<-round(reg.list[[1]]$stage1$iv1fstat$RW["F"],1)
 F.test.aux1[1]<-round(reg.list[[1]]$stage1$iv1fstat$aux1["F"],1)
 
 
 reg.list[[2]] <- felm(log.lender_amount ~ log.asset 
-                      + gdp_growth + policy_rate+ deposit.ratio + loans.ratio + NII.ratio + leverage+ log.asset_sq  
+                      + gdp_growth + policy_rate+ deposit.ratio + loans.ratio + NII.ratio + log.asset_sq  
                       | as.factor(bvdid)  + tranche_id  
                       | (RW | aux1 | aux2 ~  basel  + basel:log.asset + basel:log.asset_sq ) 
                       | tranche_id,
@@ -967,14 +1012,14 @@ reg.list[[2]] <- felm(log.lender_amount ~ log.asset
                                     RW = RW - mean(RW, na.rm = TRUE),
                                     aux1 = RW*log.asset,
                                     aux2 = RW*log.asset_sq), 
-                                    country_name_borrower != country_name, year > 2000,  IRB.indicator ==1))
+                                    country_name_borrower != country_name, year > 2000))
 F.test.RW[2]<-round(reg.list[[2]]$stage1$iv1fstat$RW["F"],1)
 F.test.aux1[2]<-round(reg.list[[2]]$stage1$iv1fstat$aux1["F"],1)
 F.test.aux2[2]<-round(reg.list[[2]]$stage1$iv1fstat$aux2["F"],1)
 
 
 reg.list[[3]] <- felm(log.lender_amount ~ log.asset 
-                      + gdp_growth + policy_rate+ deposit.ratio + loans.ratio + NII.ratio + leverage+  asset_share.gdp
+                      + gdp_growth + policy_rate+ deposit.ratio + loans.ratio + NII.ratio +  asset_share.gdp
                       | as.factor(bvdid)  + tranche_id  
                       |(RW | aux3 ~ basel + basel:asset_share.gdp) 
                       | tranche_id,
@@ -982,11 +1027,11 @@ reg.list[[3]] <- felm(log.lender_amount ~ log.asset
                                     asset_share.gdp = asset_share.gdp - mean(asset_share.gdp, na.rm = TRUE),
                                     RW = RW - mean(RW, na.rm = TRUE),
                                     aux3 = RW*asset_share.gdp), 
-                                    country_name_borrower != country_name, year > 2000,  IRB.indicator ==1))
+                                    country_name_borrower != country_name, year > 2000))
 F.test.RW[3]<-round(reg.list[[3]]$stage1$iv1fstat$RW["F"],1)
 F.test.aux1[3]<-round(reg.list[[3]]$stage1$iv1fstat$aux3["F"],1)
 
-reg.list[[4]] <- felm(log.lender_amount ~  gdp_growth + policy_rate+ deposit.ratio + loans.ratio + NII.ratio + leverage + asset_share.gdp+ asset_share.gdp_sq  
+reg.list[[4]] <- felm(log.lender_amount ~  gdp_growth + policy_rate+ deposit.ratio + loans.ratio + NII.ratio + asset_share.gdp+ asset_share.gdp_sq  
                       | as.factor(bvdid)  + tranche_id  
                       | (RW | aux3 | aux4 ~  basel  + basel:asset_share.gdp + basel:asset_share.gdp_sq ) 
                       | tranche_id,
@@ -996,11 +1041,28 @@ reg.list[[4]] <- felm(log.lender_amount ~  gdp_growth + policy_rate+ deposit.rat
                                     RW = RW - mean(RW, na.rm = TRUE),
                                     aux3 = RW*asset_share.gdp,
                                     aux4 = RW*asset_share.gdp_sq), 
-                                    country_name_borrower != country_name, year > 2000,  IRB.indicator ==1))
+                                    country_name_borrower != country_name, year > 2000))
 F.test.RW[4]<-round(reg.list[[4]]$stage1$iv1fstat$RW["F"],1)
 F.test.aux1[4]<-round(reg.list[[4]]$stage1$iv1fstat$aux3["F"],1)
 F.test.aux2[4]<-round(reg.list[[4]]$stage1$iv1fstat$aux4["F"],1)
 
+reg.list[[5]] <- felm(log.lender_amount ~ log.asset 
+                      + gdp_growth + policy_rate + deposit.ratio + loans.ratio + NII.ratio + asset_share.gdp + log.asset:asset_share.gdp| as.factor(bvdid)  + tranche_id  | 
+                        (RW | aux1 | aux3 | aux5 ~  basel 
+                                                 + basel:log.asset + basel:asset_share.gdp +
+                                                 + basel:log.asset:asset_share.gdp) | tranche_id,
+                      data = filter(mutate(loan.data,      
+                                    log.asset = log.asset - mean(log.asset, na.rm = TRUE),
+                                    asset_share.gdp = asset_share.gdp - mean(asset_share.gdp, na.rm = TRUE),
+                                    RW = RW - mean(RW, na.rm = TRUE),
+                                    aux1 = RW*log.asset,
+                                    aux3 = RW*asset_share.gdp,
+                                    aux5 = RW*log.asset*asset_share.gdp), 
+                                    country_name_borrower != country_name, year > 2000))
+F.test.RW[5]<-round(reg.list[[5]]$stage1$iv1fstat$RW["F"],1)
+F.test.aux1[5]<-round(reg.list[[5]]$stage1$iv1fstat$aux1["F"],1)
+F.test.aux2[5]<-round(reg.list[[5]]$stage1$iv1fstat$aux3["F"],1)
+F.test.aux3[5]<-round(reg.list[[5]]$stage1$iv1fstat$aux5["F"],1)
 
 ```
 
@@ -1011,7 +1073,7 @@ F.test.aux2[4]<-round(reg.list[[4]]$stage1$iv1fstat$aux4["F"],1)
 dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
 
 # Independent variables
-ind.text <- c( "$\\text{Log assets}_{i,t}$", "$(\\text{Log assets}_{i,t})^2$", "$\\text{Assets to GDP}_{i,t}$", "($\\text{Assets to GDP}_{i,t})^2$", "$\\text{RW}_{i,t}$", "$\\text{RW}_{i,t} \\times \\text{Log assets}_{i,t}$","$\\text{RW}_{i,t} \\times (\\text{Log assets}_{i,t})^2$", "$\\text{RW}_{i,t} \\times \\text{Assets to GDP}_{i,t}$", "$\\text{RW}_{i,t} \\times (\\text{Assets to GDP}_{i,t})^2$")
+ind.text <- c( "$\\text{Log assets}_{i,t}$", "$(\\text{Log assets}_{i,t})^2$", "$\\text{Assets to GDP}_{i,t}$", "($\\text{Assets to GDP}_{i,t})^2$", "$\\text{Log assets}_{i,t} \\times \\text{Assets to GDP}_{i,t}$", "$\\text{RW}_{i,t}$", "$\\text{RW}_{i,t} \\times \\text{Log assets}_{i,t}$","$\\text{RW}_{i,t} \\times (\\text{Log assets}_{i,t})^2$", "$\\text{RW}_{i,t} \\times \\text{Assets to GDP}_{i,t}$", "$\\text{RW}_{i,t} \\times (\\text{Assets to GDP}_{i,t})^2$","$\\text{RW}_{i,t} \\times \\text{Log assets}_{i,t} \\times \\text{Assets to GDP}_{i,t}$")
 
 fe.list <- list(c("Controls",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
                 c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
@@ -1024,11 +1086,11 @@ fe.list <- list(c("Controls",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list
 stargazer(reg.list,
           title = "Size, Risk-weights and Lending",
           table.layout = "n=c=d#-t-as-",
-          notes = "\\parbox[t]{12.5cm}{The table shows the interaction between the effect of risk-weights and the effect of size on cross-border corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a syndicated loan. The main independent variable, $\\text{RW}_{i,t}$, is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. In all regressions $\\text{RW}_{i,t}$ is instrumented using $\\text{Basel II}_{c,t}$, which is a dummy variable that takes the value of one for the years since the introduction of the Basel II accord in the home country of the lender. $\\text{Log assets}_{i,t}$ is the natural logarithm of the dollar amount of a bank's total asset. $\\text{Assets to GDP}_{i,t}$ is the ratio of banks total assets to their home country's GDP. All regressions include loan and bank fixed effects and the following control variables: the real GDP annual growth rate for the lender's home country, the policy rate of the lender's home country, the ratio of total customer deposits to total asset, the ratio of gross loans to total assets, the ratio of net interest income to operating income, and the ratio of book equity to total assets. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          notes = "\\parbox[t]{16cm}{The table shows the interaction between the effect of risk-weights and the effect of size on cross-border corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a syndicated loan. The main independent variable, $\\text{RW}_{i,t}$, is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. In all regressions $\\text{RW}_{i,t}$ is instrumented using $\\text{Basel II}_{c,t}$, which is a dummy variable that takes the value of one for the years since the introduction of the Basel II accord in the home country of the lender. $\\text{Log assets}_{i,t}$ is the natural logarithm of the dollar amount of a bank's total asset. $\\text{Assets to GDP}_{i,t}$ is the ratio of banks total assets to their home country's GDP. All regressions include loan and bank fixed effects and the following control variables: the real GDP annual growth rate for the lender's home country, the policy rate of the lender's home country, the ratio of total customer deposits to total asset, the ratio of gross loans to total assets, and the ratio of net interest income to operating income. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
           dep.var.labels   = dep.text,
           covariate.labels = ind.text,
           #order            = c(1, 12, 13, seq(2,11)),
-          keep             = c(1, seq(8,16)),
+          keep             = c(1, seq(7,16)),
           add.lines        = fe.list,
           #se               = se.list,
           keep.stat        = c("n","adj.rsq"),
@@ -1060,50 +1122,40 @@ F.test.aux <- c()
 
 
 reg.list[[1]] <- felm(log.lender_amount ~   gdp_growth + policy_rate + log.asset+ deposit.ratio +
-                        loans.ratio + NII.ratio + leverage
+                        loans.ratio + NII.ratio
                       | as.factor(bvdid)  + tranche_id  |(RW | aux1 ~basel + basel:number_supervisors) | tranche_id,
                       data = filter(mutate(loan.data,       
                                     number_supervisors = log(number_supervisors) - mean(log(number_supervisors), na.rm = TRUE),
                                     RW = RW - mean(RW, na.rm = TRUE),
                                     aux1 = RW*number_supervisors), 
-                                    country_name_borrower != country_name, year > 2000,  IRB.indicator ==1))
+                                    country_name_borrower != country_name, year > 2000))
 F.test.RW[1]<-round(reg.list[[1]]$stage1$iv1fstat$RW["F"],1)
 F.test.aux[1]<-round(reg.list[[1]]$stage1$iv1fstat$aux1["F"],1)
 
+
 reg.list[[2]] <- felm(log.lender_amount ~   gdp_growth + policy_rate + log.asset+ deposit.ratio +
-                        loans.ratio + NII.ratio + leverage
-                      | as.factor(bvdid)  + tranche_id  |(RW | aux2 ~basel + basel:supervisors_share.credit) | tranche_id,
+                        loans.ratio + NII.ratio
+                      | as.factor(bvdid)  + tranche_id  |(RW | aux2 ~basel + basel:freq_onsite) | tranche_id,
                       data = filter(mutate(loan.data,       
-                                    supervisors_share.credit = supervisors_share.credit - mean(supervisors_share.credit, na.rm = TRUE),
+                                    freq_onsite = freq_onsite - mean(freq_onsite, na.rm = TRUE),
                                     RW = RW - mean(RW, na.rm = TRUE),
-                                    aux2 = RW*supervisors_share.credit), 
-                                    country_name_borrower != country_name, year > 2000,  IRB.indicator ==1))
+                                    aux2 = RW*freq_onsite), 
+                                    country_name_borrower != country_name, year > 2000))
 F.test.RW[2]<-round(reg.list[[2]]$stage1$iv1fstat$RW["F"],1)
 F.test.aux[2]<-round(reg.list[[2]]$stage1$iv1fstat$aux2["F"],1)
 
 
-reg.list[[3]] <- felm(log.lender_amount ~   gdp_growth + policy_rate + log.asset+ deposit.ratio +
-                        loans.ratio + NII.ratio + leverage
-                      | as.factor(bvdid)  + tranche_id  |(RW | aux3 ~basel + basel:freq_onsite) | tranche_id,
-                      data = filter(mutate(loan.data,       
-                                    freq_onsite = freq_onsite - mean(freq_onsite, na.rm = TRUE),
-                                    RW = RW - mean(RW, na.rm = TRUE),
-                                    aux3 = RW*freq_onsite), 
-                                    country_name_borrower != country_name, year > 2000,  IRB.indicator ==1))
+
+
+
+reg.list[[3]] <- felm(log.lender_amount ~  gdp_growth + policy_rate + log.asset+ deposit.ratio +
+                        loans.ratio + NII.ratio
+                      | as.factor(bvdid)  + tranche_id  |(RW | aux3 ~basel + basel:cb_supervisor) | tranche_id,
+                      data = filter(mutate(loan.data,
+                                    aux3 = RW*cb_supervisor), 
+                                    country_name_borrower != country_name, year > 2000))
 F.test.RW[3]<-round(reg.list[[3]]$stage1$iv1fstat$RW["F"],1)
 F.test.aux[3]<-round(reg.list[[3]]$stage1$iv1fstat$aux3["F"],1)
-
-
-reg.list[[4]] <- felm(log.lender_amount ~  gdp_growth + policy_rate + log.asset+ deposit.ratio +
-                        loans.ratio + NII.ratio + leverage
-                      | as.factor(bvdid)  + tranche_id  |(RW | aux4 ~basel + basel:cb_supervisor) | tranche_id,
-                      data = filter(mutate(loan.data,
-                                    aux4 = RW*cb_supervisor), 
-                                    country_name_borrower != country_name, year > 2000,  IRB.indicator ==1))
-F.test.RW[4]<-round(reg.list[[4]]$stage1$iv1fstat$RW["F"],1)
-F.test.aux[4]<-round(reg.list[[4]]$stage1$iv1fstat$aux4["F"],1)
-
-
 
 
 ```
@@ -1116,8 +1168,7 @@ dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan
 
 # Independent variables
 ind.text <- c(  "$\\text{RW}_{i,t}$", 
-                "$\\text{RW}_{i,t} \\times\\text{Log number of professional supervisors}_{c,t}$",
-                "$\\text{RW}_{i,t} \\times\\text{Professional supervisors to bank credit}_{c,t}$",
+                "$\\text{RW}_{i,t} \\times\\text{Log Number of professional supervisors}_{c,t}$",
                 "$\\text{RW}_{i,t} \\times\\text{Frequency of onsite inspections}_{c,t}$",
                 "$\\text{RW}_{i,t} \\times\\text{Central bank supervisor}_{c,t}$",
                 "$\\text{GDP growth rate}_{c,t}$", 
@@ -1125,9 +1176,7 @@ ind.text <- c(  "$\\text{RW}_{i,t}$",
                 "$\\text{Log asset}_{i,t}$",
                 "$\\text{Deposit ratio}_{i,t}$",
                 "$\\text{Loans ratio}_{i,t}$",
-                "$\\text{Net interest income}_{i,t}$",
-                "$\\text{Leverage ratio}_{i,t}$"
-                )
+                "$\\text{Net interest income}_{i,t}$")
 
 fe.list <- list(c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
                 c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
@@ -1139,11 +1188,11 @@ fe.list <- list(c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list)
 stargazer(reg.list,
           title = "Supervision, Risk-weights, and Lending",
           table.layout = "n=c=d#-t-as-",
-          notes = "\\parbox[t]{15.5cm}{The table shows the interaction between the effect of risk-weights and the effect of supervision scrutiny on cross-border corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a syndicated loan. The main independent variable, $\\text{RW}_{i,t}$, is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. In all regressions $\\text{RW}_{i,t}$ is instrumented using $\\text{Basel II}_{c,t}$, which is a dummy variable that takes the value of one for the years since the introduction of the Basel II accord in the home country of the lender. $\\text{Log Number of professional supervisors}_{c,t}$ is the logarithm of the number of professional supervisors. $\\text{Frequency of onsite inspections}_{c,t}$ is the frequency of on-site inspections conducted in large and medium size banks. $\\text{Central bank supervisor}_{c,t}$ a dummy variable that takes one if the central bank is a supervisor. $\\text{GDP growth rate}_{c,t}$ is the real GDP annual growth rate for the lender's home country. $\\text{Policy rate}_{c,t}$ is the policy rate of the lender's home country. $\\text{Log assets}_{i,t}$ is the natural logarithm of the dollar amount of a bank's total asset. $\\text{Deposit ratio}_{i,t}$ is the ratio of total customer deposits to total asset. $\\text{Loans ratio}_{i,t}$ is the ratio of gross loans to total assets. $\\text{Net interest income}_{i,t}$ is the ratio of net interest income to operating income. $\\text{Leverage ratio}_{i,t}$ is the ratio of book equity to total assets. All regressions include loan and bank fixed effects. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          notes = "\\parbox[t]{13cm}{The table shows the interaction between the effect of risk-weights and the effect of supervision scrutiny on cross-border corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a syndicated loan. The main independent variable, $\\text{RW}_{i,t}$, is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. In all regressions $\\text{RW}_{i,t}$ is instrumented using $\\text{Basel II}_{c,t}$, which is a dummy variable that takes the value of one for the years since the introduction of the Basel II accord in the home country of the lender. $\\text{Log Number of professional supervisors}_{c,t}$ is the logarithm of the number of professional supervisors. $\\text{Frequency of onsite inspections}_{c,t}$ is the frequency of on-site inspections conducted in large and medium size banks. $\\text{Central bank supervisor}_{c,t}$ a dummy variable that takes one if the central bank is a supervisor. $\\text{GDP growth rate}_{c,t}$ is the real GDP annual growth rate for the lender's home country. $\\text{Policy rate}_{c,t}$ is the policy rate of the lender's home country. $\\text{Log assets}_{i,t}$ is the natural logarithm of the dollar amount of a bank's total asset. $\\text{Deposit ratio}_{i,t}$ is the ratio of total customer deposits to total asset. $\\text{Loans ratio}_{i,t}$ is the ratio of gross loans to total assets. $\\text{Net interest income}_{i,t}$ is the ratio of net interest income to operating income. All regressions include loan and bank fixed effects. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
           dep.var.labels   = dep.text,
           covariate.labels = ind.text,
           #keep             = seq(7,11),
-          order            = seq(8,12),
+          order            = seq(7,12),
           add.lines        = fe.list,
           #se               = se.list,
           keep.stat        = c("n","adj.rsq"),
@@ -1164,138 +1213,7 @@ stargazer(reg.list,
   )
 ```
 
-```{r bank_regressions, echo=FALSE}
 
-# Run the models
-reg.list <- list()
-se.list <- list()
-F.test.RW <- c()
-F.test.aux <- c()
-
-
-reg.list[[1]] <- felm(log(zscore)  ~  gdp_growth + policy_rate + log.asset+ deposit.ratio +
-                        loans.ratio + NII.ratio  
-                      | as.factor(bvdid)  + year  |(RW ~ basel ) | bvdid,
-                      data = filter(distinct(mutate(loan.data, 
-                                    aux1 = RW*supervisors_share.credit),
-                                     bvdid, year, .keep_all = TRUE), 
-                                    country_name_borrower != country_name, year > 2000,  IRB.indicator ==1, 
-                                    bvdid %in% pillar3.data$bvdid))
-F.test.RW[1]<-round(reg.list[[1]]$stage1$iv1fstat$RW["F"],1)
-
-reg.list[[2]] <- felm(r.mean.ROA ~   gdp_growth + policy_rate + log.asset+ deposit.ratio +
-                        loans.ratio + NII.ratio 
-                      | as.factor(bvdid)  + year  |(RW ~ basel)  | bvdid,
-                      data = filter(distinct(mutate(loan.data,
-                                    aux1 = RW*supervisors_share.credit)
-                                    , bvdid, year, .keep_all = TRUE), 
-                                    country_name_borrower != country_name, year > 2000,  IRB.indicator ==1,
-                                    bvdid %in% pillar3.data$bvdid))
-F.test.RW[2]<-round(reg.list[[2]]$stage1$iv1fstat$RW["F"],1)
-
-reg.list[[3]] <- felm(r.sd.ROA ~   gdp_growth + policy_rate + log.asset+ deposit.ratio +
-                        loans.ratio + NII.ratio 
-                      | as.factor(bvdid)  + year  |(RW ~ basel)  | bvdid,
-                      data = filter(distinct(mutate(loan.data,
-                                    aux1 = RW*supervisors_share.credit),
-                                    bvdid, year, .keep_all = TRUE), 
-                                    country_name_borrower != country_name, year > 2000,  IRB.indicator ==1,
-                                    bvdid %in% pillar3.data$bvdid))
-F.test.RW[3]<-round(reg.list[[3]]$stage1$iv1fstat$RW["F"],1)
-
-
-reg.list[[4]] <- felm(r.mean.CAR ~   gdp_growth + policy_rate + log.asset+ deposit.ratio +
-                        loans.ratio + NII.ratio 
-                      | as.factor(bvdid)  + year  |(RW ~ basel )  | bvdid,
-                      data = filter(distinct(mutate(loan.data, 
-                                    aux1 = RW*supervisors_share.credit),
-                                    bvdid, year, .keep_all = TRUE), 
-                                    country_name_borrower != country_name, year > 2000,  IRB.indicator ==1,
-                                    bvdid %in% pillar3.data$bvdid))
-F.test.RW[4]<-round(reg.list[[4]]$stage1$iv1fstat$RW["F"],1)
-
-reg.list[[5]] <- felm(log.asset ~   gdp_growth + policy_rate + deposit.ratio +
-                        loans.ratio + NII.ratio 
-                      | as.factor(bvdid)  + year  |(RW ~ basel )  | bvdid,
-                      data = filter(distinct(mutate(loan.data,
-                                    aux1 = RW*supervisors_share.credit),
-                                    bvdid, year, .keep_all = TRUE), 
-                                    country_name_borrower != country_name, year > 2000,  IRB.indicator ==1,
-                                    bvdid %in% pillar3.data$bvdid))
-F.test.RW[5]<-round(reg.list[[5]]$stage1$iv1fstat$RW["F"],1)
-
-reg.list[[6]] <- felm(log.equity ~   gdp_growth + policy_rate + deposit.ratio +
-                        loans.ratio + NII.ratio 
-                      | as.factor(bvdid)  + year  |(RW ~ basel ) |bvdid,
-                      data = filter(distinct(mutate(loan.data,
-                                    aux1 = RW*supervisors_share.credit),
-                                    bvdid, year, .keep_all = TRUE), 
-                                    country_name_borrower != country_name, year > 2000,  IRB.indicator ==1,
-                                    bvdid %in% pillar3.data$bvdid))
-F.test.RW[6]<-round(reg.list[[6]]$stage1$iv1fstat$RW["F"],1)
-
-reg.list[[7]] <- felm(log(leverage) ~   gdp_growth + policy_rate + deposit.ratio +
-                        loans.ratio + NII.ratio 
-                      | as.factor(bvdid)  + year  |(RW ~ basel ) |bvdid,
-                      data = filter(distinct(mutate(loan.data,
-                                    aux1 = RW*supervisors_share.credit),
-                                    bvdid, year, .keep_all = TRUE), 
-                                    country_name_borrower != country_name, year > 2000,  IRB.indicator ==1,
-                                    bvdid %in% pillar3.data$bvdid))
-F.test.RW[7]<-round(reg.list[[6]]$stage1$iv1fstat$RW["F"],1)
-
-```
-
-
-```{r bank_aux, echo=FALSE}
-
-# Dependent variables
-dep.text <- c("$\\text{Log Z-score}_{i,t}$", "$\\text{ROA}_{i,t}$","$\\text{sd(ROA)}_{i,t}$", "$\\text{Leverage ratio}_{i,t}$", "$\\text{Log asset}_{i,t}$", "$\\text{Log equity}_{i,t}$", "$\\text{Log leverage}_{i,t}$")
-
-# Independent variables
-ind.text <- c(  "$\\text{RW}_{i,t}$",
-                "$\\text{GDP growth rate}_{c,t}$", 
-                "$\\text{Policy rate}_{c,t}$",
-                "$\\text{Log asset}_{i,t}$",
-                "$\\text{Deposit ratio}_{i,t}$",
-                "$\\text{Loans ratio}_{i,t}$",
-                "$\\text{Net interest income}_{i,t}$",
-                "$\\text{Leverage ratio}_{i,t}$")
-
-fe.list <- list(c("Year FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
-                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
-                c("F-value (1st stage on RW)", F.test.RW))
-
-```
-
-```{r bank_table, eval=TRUE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
-stargazer(reg.list,
-          title = "Risk-weights and Bank-level Outcomes",
-          table.layout = "n=c=d#-t-as-",
-          notes = "\\parbox[t]{17cm}{The table shows the effect of risk-weights on bank level outcomes. $\\text{Log Z-score}_{i,t}$ is the bank's return on assets plus the leverage ratio divided by the standard deviation of asset returns over a three year rolling period. $\\text{ROA}_{i,t}$ is the ratio of pre-tax income to total assets, and $\\text{sd(ROA)}_{i,t}$ its standard deviation. $\\text{Leverage ratio}_{i,t}$ is the ratio of book equity to total assets. $\\text{Log assets}_{i,t}$ is the natural logarithm of the dollar amount of the bank's total asset. $\\text{Log equity}_{i,t}$ is the natural logarithm of the dollar amount of the bank's book equity. The main independent variable, $\\text{RW}_{i,t}$, is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. In all regressions $\\text{RW}_{i,t}$ is instrumented using $\\text{Basel II}_{c,t}$, which is a dummy variable that takes the value of one for the years since the introduction of the Basel II accord in the home country of the lender. $\\text{GDP growth rate}_{c,t}$ is the real GDP annual growth rate for the lender's home country. $\\text{Policy rate}_{c,t}$ is the policy rate of the lender's home country.$\\text{Deposit ratio}_{i,t}$ is the ratio of total customer deposits to total asset. $\\text{Loans ratio}_{i,t}$ is the ratio of gross loans to total assets. $\\text{Net interest income}_{i,t}$ is the ratio of net interest income to operating income. All regressions include bank and year fixed effects. Clustered standard errors at the bank level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
-          dep.var.labels   = dep.text,
-          covariate.labels = ind.text,
-          #keep             = seq(7,11),
-          order            = c(7,seq(1,6)),
-          add.lines        = fe.list,
-          #se               = se.list,
-          keep.stat        = c("n","adj.rsq"),
-          header           = FALSE, 
-          font.size        = "scriptsize",
-          notes.label      = "",
-          notes.align      = "c", 
-          notes.append     = FALSE,
-          label            = "tab:bank",
-          style            = "qje",
-          column.sep.width = "-1.0pt",
-          align            = TRUE,
-          #no.space        = TRUE,
-          #column.labels    = c("OLS", "IV 1", "IV 2", "IV 3"),
-          #column.separate  = c(1,1,1,1),
-          #float.env        = "sidewaystable",
-          type             = "latex"
-  )
-```
 
 
 \newpage
@@ -1303,73 +1221,67 @@ stargazer(reg.list,
 \appendix 
 
 \section{} \label{sec:appendixa}
-\setcounter{table}{0}
-\renewcommand{\thetable}{A\arabic{table}}
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{A\arabic{figure}}
 
 
-```{r cluster_regressions, echo=FALSE}
+```{r fe_regressions, echo=FALSE}
 # Run the models
 reg.list <- list()
 se.list <- list()
 F.test <- c()
 
-reg.list[[2]] <- felm(log.lender_amount ~  gdp_growth+policy_rate+log.asset  +  deposit.ratio + loans.ratio + NII.ratio +leverage
-                      | as.factor(bvdid) +  tranche_id | (RW ~ basel) | bvdid,
-                      data = filter(loan.data, country_name_borrower != country_name, year > 2000,  IRB.indicator ==1))
-rownames(reg.list[[2]]$coefficients)[rownames(reg.list[[2]]$coefficients)=='`RW(fit)`']<-'RW'
-rownames(reg.list[[2]]$beta)[rownames(reg.list[[2]]$beta)=='`RW(fit)`']<-'RW'
-
-reg.list[[1]] <- reg.list[[2]]$stage1
-F.test[1]<-round(summary(reg.list[[1]])$iv1fstat["F"],1)
-
-
-
-reg.list[[4]] <- felm(log.lender_amount ~  gdp_growth+policy_rate+log.asset  +  deposit.ratio + loans.ratio + NII.ratio +leverage
-                      | as.factor(bvdid) +  tranche_id | (RW ~ basel) | tranche_id,
+reg.list[[1]] <- felm(log.lender_amount ~  1
+                      | 0 | (RW ~ basel) | tranche_id,
                       data = filter(loan.data, country_name_borrower != country_name, year > 2000))
-rownames(reg.list[[4]]$coefficients)[rownames(reg.list[[4]]$coefficients)=='`RW(fit)`']<-'RW'
-rownames(reg.list[[4]]$beta)[rownames(reg.list[[4]]$beta)=='`RW(fit)`']<-'RW'
 
-reg.list[[3]] <- reg.list[[4]]$stage1
-F.test[3]<-round(summary(reg.list[[3]])$iv1fstat["F"],1)
+
+reg.list[[2]] <- felm(log.lender_amount ~  1
+                      | as.factor(bvdid)  | (RW ~ basel) | tranche_id,
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
+
+reg.list[[3]] <- felm(log.lender_amount ~  1
+                      |   tranche_id | (RW ~ basel) | tranche_id,
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
+
+reg.list[[4]] <- felm(log.lender_amount ~  gdp_growth+policy_rate+log.asset  +  deposit.ratio + loans.ratio + NII.ratio 
+                      | 0 | (RW ~ basel) | tranche_id,
+                      data = filter(loan.data, country_name_borrower != country_name, year > 2000))
+
+
 
 
 ```
 
 
-```{r cluster_aux, echo=FALSE}
+```{r fe_aux, echo=FALSE}
 
 # Dependent variables
-dep.text <- c("$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
+dep.text <- c("$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$","$\\text{RW}_{i,t}$", "$\\text{Log loan}_{l,i}$")
 
 # Independent variables
-ind.text <- c("$\\text{RW}_{i,t}$", 
-              "$\\text{Basel II}_{c,t}$",
+ind.text <- c("$\\text{RW}_{i,t}$",
               "$\\text{GDP growth rate}_{c,t}$", 
               "$\\text{Policy rate}_{c,t}$",
               "$\\text{Log asset}_{i,t}$",
               "$\\text{Deposit ratio}_{i,t}$",
               "$\\text{Loans ratio}_{i,t}$",
-              "$\\text{Net interest income}_{i,t}$",
-              "$\\text{Leverage ratio}_{i,t}$",
-              "$\\text{NPL ratio}_{i,t}$",
-              "$\\text{Capital ratio}_{i,t}$")
+              "$\\text{Net interest income}_{i,t}$")
 
-fe.list <- list(c("Loan FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
-                c("Bank FE",    rep("\\multicolumn{1}{c}{Yes}", length(reg.list))),
+fe.list <- list(c("Loan FE", "\\multicolumn{1}{c}{No}", "\\multicolumn{1}{c}{No}", "\\multicolumn{1}{c}{Yes}", "\\multicolumn{1}{c}{No}"),
+                c("Bank FE", "\\multicolumn{1}{c}{No}", "\\multicolumn{1}{c}{Yes}", "\\multicolumn{1}{c}{No}", "\\multicolumn{1}{c}{No}"),
                 c("F-value (1st stage)",    F.test))
 
 ```
 
-
-```{r cluster_table, eval=TRUE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+```{r fe_table, eval=TRUE, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
 stargazer(reg.list,
-          title = "Robustness Checks",
+          title = "Risk-weights and Corporate Lending",
           table.layout = "n=c=d#-t-as-",
-          notes = "\\parbox[t]{12cm}{The table shows two robustness checks of the effect of risk-weights on cross-border corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a syndicated loan. The main independent variable, $\\text{RW}_{i,t}$, is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. The instrumental variable, $\\text{Basel II}_{c,t}$, is a dummy variable that takes the value of one for the years since the introduction of the Basel II accord in the home country of the lender. $\\text{GDP growth rate}_{c,t}$ is the real GDP annual growth rate for the lender's home country. $\\text{Policy rate}_{c,t}$ is the policy rate of the lender's home country. $\\text{Log assets}_{i,t}$ is the natural logarithm of the dollar amount of a bank's total asset. $\\text{Deposit ratio}_{i,t}$ is the ratio of total customer deposits to total asset. $\\text{Loans ratio}_{i,t}$ is the ratio of gross loans to total assets. $\\text{Net interest income}_{i,t}$ is the ratio of net interest income to operating income. $\\text{Leverage ratio}_{i,t}$ is the ratio of book equity to total assets. All regressions include loan and bank fixed effects. Clustered standard errors at the bank level in columns (1) and (2) and at the loan level in columns (3) and (4) are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
+          notes = "\\parbox[t]{12cm}{TThe table shows the effect of risk-weights on cross-border corporate lending. The dependent variable is the logarithm of the amount lent by the bank in a syndicated loan. The main independent variable, $\\text{RW}_{i,t}$, is the average risk-weight of the bank's corporate portfolio in the year that the loan was issued. The instrumental variable, $\\text{Basel II}_{c,t}$, is a dummy variable that takes the value of one for the years since the introduction of the Basel II accord in the home country of the lender. $\\text{GDP growth rate}_{c,t}$ is the real GDP annual growth rate for the lender's home country. $\\text{Policy rate}_{c,t}$ is the policy rate of the lender's home country. $\\text{Log assets}_{i,t}$ is the natural logarithm of the dollar amount of a bank's total asset. $\\text{Deposit ratio}_{i,t}$ is the ratio of total customer deposits to total asset. $\\text{Loans ratio}_{i,t}$ is the ratio of gross loans to total assets. $\\text{Net interest income}_{i,t}$ is the ratio of net interest income to operating income. All regressions include loan and bank fixed effects. Clustered standard errors at the loan level are reported in parentheses. *, **, and *** indicate statistical significance at the 10\\%, 5\\%, and 1\\% level respectively.}",
           dep.var.labels   = dep.text,
           covariate.labels = ind.text,
-          order           = c(9, 8, seq(1,7)),
+          order            = c(7, seq(1,6),8),
           add.lines        = fe.list,
           #se               = se.list,
           keep.stat        = c("n","adj.rsq"),
@@ -1378,13 +1290,13 @@ stargazer(reg.list,
           notes.label      = "",
           notes.align      = "c", 
           notes.append     = FALSE,
-          label            = "tab:robustness",
+          label            = "tab:fe",
           style            = "qje",
           column.sep.width = "-1.0pt",
           align            = TRUE,
           #no.space        = TRUE,
-          column.labels    = c("Bank-level cluster S.E.", "Including SA banks"),
-          column.separate  = c(2,2),
+          column.labels    = c("OLS", "IV 1", "IV 2"),
+          column.separate  = c(1,2,2),
           #float.env        = "sidewaystable",
           type             = "latex"
   )

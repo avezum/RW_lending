@@ -129,7 +129,25 @@ BRSS <- BRSS %>%
   rename(country_code = country)%>%
   select(-country.name)
 
-save(list = c("IRB.indicator", "WDI", "BRSS", "country.names", "basel.indicator", "IFS", "SSM.indicator"),
+supervision <- read_xls("Data/Raw/BRSS/Output/supervision.xls", sheet = 2) %>%
+  pivot_longer(cols = where(is.numeric),
+               names_to = "country_code")%>%
+  pivot_wider(names_from = variables,
+              values_from = value)%>%
+  mutate(supervisors_banks= number_supervisors/number_banks,
+         log.number = log(number_supervisors)) %>%
+  rownames_to_column("id")
+
+pca <- data.frame(prcomp(~ log.number + freq_onsite + cb_supervisor, data = supervision,
+              scale = TRUE, center = TRUE, na.action = na.omit)$x) %>%
+  select(PC1)%>%
+  rownames_to_column("id")
+
+supervision <- supervision %>%
+  left_join(pca, by = "id") %>%
+  mutate(PC1 = -PC1)
+
+save(list = c("IRB.indicator", "WDI", "BRSS", "country.names", "basel.indicator", "IFS", "SSM.indicator", "supervision"),
      file=paste0("Data/Temp/AuxiliarData.Rda"))
 
 ##============================================================================##
@@ -309,8 +327,18 @@ bankscope <- bankscope %>%
          -c("companyname", "countryisocode","lastavail", "guoname", "conscode",
             "status", "listeddelistedunlisted", "delisteddate", "guobvdid", "guocountryisocode",
             "guotype", "closingdate", "month", "1", "bvdid_new", "bvdid_old")) %>%
+  group_by(bvdid)%>% 
+  arrange(bvdid, year) %>%
+  mutate(log.asset     = log(totalassetsmillcu*exchangeratefromoriginalcurrencyusd),
+         log.equity    = log(equitymillcu*exchangeratefromoriginalcurrencyusd),
+         leverage      = equitymillcu/totalassetsmillcu,
+         ROA           = plbeforetaxmillcu/totalassetsmillcu,
+         r.mean.ROA = rollapply(ROA, 3, mean, na.rm = TRUE, align='right', fill=NA),
+         r.mean.CAR = rollapply(leverage, 3, mean, na.rm = TRUE, align='right', fill=NA),
+         r.sd.ROA   = rollapply(ROA, 3, sd, na.rm = TRUE, align='right', fill=NA),
+         zscore     = (r.mean.ROA + r.mean.CAR)/r.sd.ROA)%>%
+  mutate_at(vars(matches("log.")), .funs = list(gr= ~ . - lag(., order_by = year))) %>%
   ungroup()
-
 
 # Save data frame
 save(bankscope,file=paste0("Data/Temp/BankScope.Rda"))
